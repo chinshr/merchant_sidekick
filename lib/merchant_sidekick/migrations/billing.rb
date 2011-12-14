@@ -13,7 +13,7 @@ class CreateMerchantSidekickBillingTables < ActiveRecord::Migration
       t.decimal "tax_rate",      :precision => 15, :scale => 10, :default => 0.0, :null => false 
     end
     add_index "line_items", "invoice_id"
-    add_index "line_items", "order_id"]
+    add_index "line_items", "order_id"
     add_index "line_items", ["sellable_id", "sellable_type"]
 
 
