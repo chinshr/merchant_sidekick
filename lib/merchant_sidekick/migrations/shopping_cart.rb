@@ -21,7 +21,6 @@ class CreateMerchantSidekickShoppingCartTables < ActiveRecord::Migration
     add_index "cart_line_items", "pieces"
     add_index "cart_line_items", ["product_id", "product_type"]
     add_index "cart_line_items", "quantity"
-    add_index "cart_line_items", "unit"
   end
 
   def self.down
