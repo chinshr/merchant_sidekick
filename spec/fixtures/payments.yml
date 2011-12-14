@@ -1,0 +1,17 @@
+first:
+  id: 1 
+  payable_id: 2
+  payable_type: Order
+  cents: 9995
+  currency: USD
+  confirmation: 100000001
+  created_at: <%= 6.minutes.ago.to_s :db %>
+  updated_at: <%= 6.minutes.ago.to_s :db %>
+authorized:
+  id: 2
+  payable_id: 1
+  payable_type: Order
+  cents: 14995
+  currency: USD
+  confirmation: 12345
+  updated_at: <%= 1.week.ago.to_s :db %>

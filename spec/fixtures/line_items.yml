@@ -1,0 +1,8 @@
+
+sams_widget:
+  id: 1
+  order_id: 1
+  sellable_id: 1
+  sellable_type: Product
+  cents: 999
+  currency: USD

@@ -1,0 +1,97 @@
+paid_order_billing_address:
+  id: 2
+  first_name: Erik
+  last_name: Bolton
+  street: 223 Riverside St.
+  city: Baltimore
+  province: North Carolina
+  province_code: NC
+  postal_code: 12345
+  country_code: USA
+  country: United States of America
+  type: BillingAddress
+  addressable_id: 2
+  addressable_type: Order
+paid_order_shipping_address:
+  id: 3
+  first_name: Sam
+  last_name: Body
+  street: 11 1st St
+  city: Somewhere
+  province: NA
+  province_code: NA
+  postal_code: 12345
+  country_code: USA
+  country: USA
+  type: ShippingAddress
+  addressable_id: 2
+  addressable_type: Order
+paid_order_origin_address:
+  id: 4
+  company_name: Coal Headware
+  street: 500 Lobster Dr.
+  city: Portland
+  province: Washington
+  province_code: WA
+  postal_code: 78543
+  country_code: USA
+  country: USA
+  type: OriginAddress
+  addressable_id: 2
+  addressable_type: Order
+sam_billing:
+  id: 5
+  first_name: Sam
+  last_name: Body
+  street: 1 Billing Way
+  city: Somewhere
+  province: NA
+  province_code: NA
+  postal_code: 12345
+  country_code: USA
+  country: USA
+  type: BillingAddress
+  addressable_id: 1
+  addressable_type: DummyUser
+sam_shipping:
+  id: 6
+  first_name: Sam
+  last_name: Body
+  street: 500 Shipping Blvd.
+  city: Somewhere
+  province: NA
+  province_code: NA
+  postal_code: 12345
+  country_code: USA
+  country: USA
+  type: ShippingAddress
+  addressable_id: 1
+  addressable_type: DummyUser
+sally_billing:
+  id: 7
+  first_name: Sally
+  last_name: Sellers
+  street: 105 Billing St.
+  city: San Francisco
+  province: California
+  province_code: CA
+  postal_code: 94084
+  country_code: US
+  country: United States of America
+  type: BillingAddress
+  addressable_id: 2
+  addressable_type: DummyUser
+sally_shipping:
+  id: 8
+  first_name: Sally
+  last_name: Sellers
+  street: 3523 Shipping Ave.
+  city: Portland
+  province: Oregon
+  province_code: OR
+  postal_code: 12345
+  country_code: US
+  country: United States of America
+  type: ShippingAddress
+  addressable_id: 2
+  addressable_type: DummyUser

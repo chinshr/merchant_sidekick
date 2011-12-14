@@ -1,0 +1,21 @@
+sams_widget:
+  id: 1
+  buyer_id: 1
+  buyer_type: BuyingUser
+  net_cents: 2995
+  tax_cents: 0
+  gross_cents: 2995
+  currency: USD
+paid:
+  id: 2
+  buyer_id: 1
+  buyer_type: BuyingUser
+unpaid:
+  id: 3
+  buyer_id: 1
+  buyer_type: BuyingUser
+  net_cents: 12321
+  tax_cents: 0
+  gross_cents: 12321
+  currency: USD
+  
