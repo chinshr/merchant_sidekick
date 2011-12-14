@@ -1,4 +1,6 @@
 require 'merchant_sidekick/version'
+require 'merchant_sidekick/money'
+
 require 'merchant_sidekick/acts_as_sellable'
 require 'merchant_sidekick/acts_as_buyer'
 require 'merchant_sidekick/acts_as_seller'
@@ -21,6 +23,7 @@ require 'merchant_sidekick/gateways/paypal_gateway'
 require 'merchant_sidekick/payments/payment'
 require 'merchant_sidekick/payments/credit_card_payment'
 
+ActiveRecord::Base.send :include, MerchantSidekick::Money
 ActiveRecord::Base.send(:include, MerchantSidekick::Buyer)
 ActiveRecord::Base.send(:include, MerchantSidekick::Sellable)
 ActiveRecord::Base.send(:include, MerchantSidekick::Seller)
