@@ -2,6 +2,7 @@ require "active_record"
 require "money"
 require 'merchant_sidekick/version'
 require 'merchant_sidekick/money'
+require 'acts_as_list'
 
 ActiveRecord::Base.extend MerchantSidekick::Money
 
@@ -24,7 +25,7 @@ ActiveRecord::Base.extend MerchantSidekick::Money
 # require 'merchant_sidekick/gateways/authorize_net_gateway'
 # require 'merchant_sidekick/gateways/paypal_gateway'
 #
-# require 'merchant_sidekick/payments/payment'
+require 'merchant_sidekick/payments/payment'
 # require 'merchant_sidekick/payments/credit_card_payment'
 #
 # ActiveRecord::Base.send(:include, MerchantSidekick::Buyer)
