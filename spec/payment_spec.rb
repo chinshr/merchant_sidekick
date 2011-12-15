@@ -1,14 +1,14 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path("../spec_helper", __FILE__)
 
 describe "A payment" do
-  
+
   it "should belong to a payable" do
-    lambda { Payment.new.payable(true) }.should_not raise_error
+    lambda { MerchantSidekick::Payments::Payment.new.payable(true) }.should_not raise_error
   end
-  
+
   it "should have an amount" do
-    Payment.new.should respond_to(:amount)
+    MerchantSidekick::Payments::Payment.new.should respond_to(:amount)
   end
-  
+
 end
 

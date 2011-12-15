@@ -1,7 +1,7 @@
 # encoding: utf-8
 $:.push File.expand_path("../lib", __FILE__)
 
-require "merchant_sidekick"
+require File.expand_path("../lib/merchant_sidekick/version", __FILE__)
 
 Gem::Specification.new do |s|
   s.name              = "merchant_sidekick"
@@ -17,9 +17,11 @@ Gem::Specification.new do |s|
 
   s.add_dependency "activerecord", "~> 3.1.0"
   s.add_dependency "money"
+  s.add_dependency "acts_as_list"
 
   s.add_development_dependency "rspec"
   s.add_development_dependency "sqlite3"
+  s.add_development_dependency "rake"
 
   s.description = <<-EOM
 EOM
