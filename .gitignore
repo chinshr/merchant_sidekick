@@ -5,6 +5,7 @@ pkg
 .DS_Store
 coverage
 .yardoc
+.rvmrc
 *.gem
 *.sqlite3
 *.rbc
