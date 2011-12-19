@@ -6,8 +6,9 @@ require 'acts_as_list'
 
 ActiveRecord::Base.extend MerchantSidekick::Money
 
+require 'merchant_sidekick/addressable/addressable'
 require 'merchant_sidekick/addressable/address'
-# require 'merchant_sidekick/addressable/addressable'
+ActiveRecord::Base.send(:include, MerchantSidekick::Addressable)
 
 # require 'merchant_sidekick/acts_as_sellable'
 # require 'merchant_sidekick/acts_as_buyer'

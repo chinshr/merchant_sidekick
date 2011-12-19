@@ -66,7 +66,7 @@ module MerchantSidekick #:nodoc:
               #       for singular attribute, e.g. :business -> BusinessAddress, otherwise,
               #       Rails default would inflect :business -> BusinesAddress
               address_class = <<-ADDRESS
-                class #{attribute.to_s.pluralize.classify}Address < Address
+                class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
                   def self.kind
                     '#{attribute}'.to_sym
                   end
@@ -123,7 +123,7 @@ module MerchantSidekick #:nodoc:
           has_many :addresses, :as => :addressable, :dependent => :destroy
           attributes.each do |attribute|
             address_class = <<-ADDRESS
-              class #{attribute.to_s.pluralize.classify}Address < Address
+              class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
                 def self.kind
                   '#{attribute}'.to_sym
                 end
@@ -165,16 +165,17 @@ module MerchantSidekick #:nodoc:
           end
         end
 
-        # Options
+=begin
+        # write options
         write_inheritable_attribute(:acts_as_addressable_options, {
           :association_type => options[:has_one] ? :has_one : :has_many,
           :attributes => attributes
         })
         class_inheritable_reader :acts_as_addressable_options
+=end
 
-        # Includes
-        include Acts::Addressable::InstanceMethods
-        extend Acts::Addressable::SingletonMethods
+        include MerchantSidekick::Addressable::InstanceMethods
+        extend MerchantSidekick::Addressable::SingletonMethods
       end
     end
   

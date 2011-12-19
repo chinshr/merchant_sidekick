@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path("../spec_helper", __FILE__)
 
 describe HasOneSingleAddressModel, "new" do
 
   before(:each) do
-    Address.middle_name_column = false
+    MerchantSidekick::Addressable::Address.middle_name_column = false
     @addressable = HasOneSingleAddressModel.new
     @address = @addressable.build_address valid_address_attributes
   end
@@ -61,7 +61,7 @@ end
 describe HasOneMultipleAddressModel do
 
   before(:each) do
-    Address.middle_name_column = false
+    MerchantSidekick::Addressable::Address.middle_name_column = false
     @addressable = HasOneMultipleAddressModel.create
     @billing_address = @addressable.create_billing_address valid_address_attributes(:first_name => "Bill")
     @shipping_address = @addressable.create_shipping_address valid_address_attributes(:first_name => "Ship")

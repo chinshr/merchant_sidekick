@@ -20,24 +20,24 @@ ActiveRecord::Migration.verbose = false
 require "schema"
 at_exit {ActiveRecord::Base.connection.disconnect!}
 
-#--- MerchantSidekick::Addressable 
+#--- MerchantSidekick::Addressable test models
 class Addressable < ActiveRecord::Base
 end
 
 class HasOneSingleAddressModel < Addressable
-#  acts_as_addressable :has_one => true
+  acts_as_addressable :has_one => true
 end
 
 class HasManySingleAddressModel < Addressable
-#  acts_as_addressable :has_many => true
+  acts_as_addressable :has_many => true
 end
 
 class HasOneMultipleAddressModel < Addressable
-#  acts_as_addressable :billing, :shipping, :has_one => true
+  acts_as_addressable :billing, :shipping, :has_one => true
 end
 
 class HasManyMultipleAddressModel < Addressable
-#  acts_as_addressable :billing, :shipping, :has_many => true
+  acts_as_addressable :billing, :shipping, :has_many => true
 end
 
 def valid_address_attributes(options={})
