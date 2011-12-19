@@ -1,8 +1,9 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path("../spec_helper", __FILE__)
+Address = MerchantSidekick::Addressable::Address
 
-describe Address, "should handle default columns" do
+describe MerchantSidekick::Addressable::Address, "should handle default columns" do
   it "should have default class attr columns assigned" do
-    Address.street_address_column.should == :street
+    Address.street_address_column.should == :street 
     Address.city_column.should == :city
     Address.postal_code_column.should == :postal_code
     Address.province_column.should  == :province
@@ -16,10 +17,10 @@ describe Address, "should handle default columns" do
   end
 end
 
-describe Address, "all address members" do
+describe MerchantSidekick::Addressable::Address, "with address members" do
   
   before(:each) do
-    @address = Address.new(valid_address_attributes(:addressable => AddressableModel.create))
+    @address = Address.new(valid_address_attributes(:addressable => Addressable.create))
   end
   
   it "should create an address" do
@@ -71,17 +72,17 @@ describe Address, "all address members" do
 
   it "should stringify address fields" do
     # full
-    @address.to_s.should == "George Bush, 100 Washington St., Santa Cruz, California, 95065, United States of America"
+    @address.to_s.should == "100 Washington St., Santa Cruz, California, 95065, United States of America"
     
     # sparse
-    sparse_addr = Address.new(
-      :street => "100 Sunshine Blvd.",
-      :postal_code => '95066',
-      :city => 'Scotts Valley',
+    @address = Address.new(
+      :street        => "100 Sunshine Blvd.",
+      :postal_code   => '95066',
+      :city          => 'Scotts Valley',
       :province_code => 'CA',
-      :country_code => 'US'
+      :country_code  => 'US'
     )
-    sparse_addr.to_s.should == "100 Sunshine Blvd., Scotts Valley, CA, 95066, US"
+    @address.to_s.should == "100 Sunshine Blvd., Scotts Valley, CA, 95066, US"
   end
   
   it "should return a name" do
@@ -95,7 +96,7 @@ describe Address, "all address members" do
   
   it "should convert to active merchant address attributes" do
     @address = Address.new(valid_address_attributes(
-      :addressable => AddressableModel.create,
+      :addressable => Addressable.create,
       :street => "100 Sunshine Blvd.\nSuite 7"
     ))
     merchant = @address.to_merchant_attributes
