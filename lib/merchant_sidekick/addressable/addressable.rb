@@ -1,5 +1,4 @@
-# ActsAsAddressable
-module Acts #:nodoc:
+module MerchantSidekick #:nodoc:
   module Addressable #:nodoc:
 
     def self.included(base)
