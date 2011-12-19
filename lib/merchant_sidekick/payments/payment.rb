@@ -36,16 +36,9 @@ module MerchantSidekick
         :payment
       end
   
-      # Used to display payment type in views
-      # e.g. 'Credit Card'
-      def payment_type_display
-        payment_type.to_s.titleize
-      end
-      alias_method :payment_method_display, :payment_type_display
-
       # returns true if the payment transaction was successful
       def success?
-        self[:success] || false
+        !!(self[:success] || false)
       end
 
       # return only attributes with relevant content
