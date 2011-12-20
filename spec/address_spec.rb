@@ -71,7 +71,7 @@ describe MerchantSidekick::Addressable::Address, "with address members" do
 
   it "should stringify address fields" do
     # full
-    @address.to_s.should == "100 Washington St., Santa Cruz, California, 95065, United States of America"
+    @address.to_s.should == "George Bush, 100 Washington St., Santa Cruz, California, 95065, United States of America"
     
     # sparse
     @address = MerchantSidekick::Addressable::Address.new(

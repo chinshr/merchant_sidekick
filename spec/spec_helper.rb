@@ -30,7 +30,7 @@ class MerchantSidekick::Addressable::Address
     name << self.middle_name if MerchantSidekick::Addressable::Address.middle_name?
     name << self.last_name
     name = name.reject(&:blank?).join(" ")
-    [name, to_s_without_name].join(", ")
+    [name, to_s_without_name].reject(&:blank?).join(", ")
   end
   alias_method_chain :to_s, :name
 end
