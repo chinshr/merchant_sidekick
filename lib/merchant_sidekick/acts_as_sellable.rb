@@ -27,8 +27,8 @@ module MerchantSidekick
         
         class_eval do
           money :price, options
-          has_many :line_items, :as => :sellable
-          has_many :orders, :through => :line_items
+          has_many :line_items, :as => :sellable, :class_name => "MerchantSidekick::LineItem"
+          has_many :orders, :through => :line_items, :class_name => "MerchantSidekick::Order"
         end
       end
     end

@@ -15,7 +15,7 @@ require 'merchant_sidekick/acts_as_sellable'
 # require 'merchant_sidekick/acts_as_buyer'
 # require 'merchant_sidekick/acts_as_seller'
 #
-# require 'merchant_sidekick/line_item'
+require 'merchant_sidekick/line_item'
 # require 'merchant_sidekick/order'
 # require 'merchant_sidekick/purchase_order'
 # require 'merchant_sidekick/sales_order'

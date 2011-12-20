@@ -7,11 +7,11 @@ describe "A sellable" do
   end
   
   it "should have many line_items" do
-    lambda { Product.new.line_items(true) }.should_not raise_error
+    lambda { Product.new.line_items.should == [] }.should_not raise_error
   end
   
   it "should have many orders" do
-    lambda { Product.new.orders(true) }.should_not raise_error
+    lambda { Product.new.orders.should == [] }.should_not raise_error
   end
   
 end
