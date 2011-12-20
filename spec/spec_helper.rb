@@ -6,7 +6,9 @@ require "merchant_sidekick"
 require "ruby-debug"
 
 RSpec.configure do |config|
-  # some (optional) config here
+#  config.use_transactional_fixtures = true
+#  config.use_instantiated_fixtures  = false
+#  config.fixture_path = File.dirname(__FILE__) + '/fixtures'
 end
 
 # If you want to see the ActiveRecord log, invoke the tests using `rake test LOG=true`
@@ -22,6 +24,7 @@ require "schema"
 at_exit {ActiveRecord::Base.connection.disconnect!}
 
 #--- MerchantSidekick::Addressable test models
+
 class MerchantSidekick::Addressable::Address
   # extend to_s method for testing purposes only
   def to_s_with_name
@@ -54,7 +57,7 @@ class HasManyMultipleAddressModel < Addressable
   acts_as_addressable :billing, :shipping, :has_many => true
 end
 
-def valid_address_attributes(options={})
+def valid_address_attributes(attributes = {})
   {
     :first_name    => "George",
     :last_name     => "Bush",
@@ -70,5 +73,74 @@ def valid_address_attributes(options={})
     :fax           => "+1 831 323-4567",
     :country_code  => "US",
     :country       => "United States of America"
-  }.merge(MerchantSidekick::Addressable::Address.middle_name? ? { :middle_name => "W." } : {}).merge(options)
+  }.merge(MerchantSidekick::Addressable::Address.middle_name? ? { :middle_name => "W." } : {}).merge(attributes)
 end
+
+#--- MerchantSidekick generic test models
+
+class Product < ActiveRecord::Base
+  money :price
+  acts_as_sellable
+  
+  # TODO weird cart serialization workaround
+  def target; true; end
+end
+
+class ProductWithNameAndSku < Product
+  def name
+    "A beautiful name"
+  end
+  
+  def sku
+    "PR1234"
+  end
+  
+  def description 
+    "Wonderful name!"
+  end
+  
+  def taxable
+    true
+  end
+end
+
+class ProductWithTitleAndNumber < Product
+  def title
+    "A beautiful title"
+  end
+  
+  def number
+    "PR1234"
+  end
+  
+  def description 
+    "Wonderful title!"
+  end
+
+  def new_record?
+    true
+  end
+end
+
+class ProductWithCopy < Product
+  def copy_name(options={})
+    "customized name"
+  end
+  
+  def copy_item_number(options = {})
+    "customized item number"
+  end
+
+  def copy_description(options = {})
+    "customized description"
+  end
+  
+  def copy_price(options = {})
+    Money.new(9999, "USD")
+  end
+end
+
+def valid_cart_line_item_attributes(attributes = {})
+  {:quantity => 5}.merge(attributes)
+end
+

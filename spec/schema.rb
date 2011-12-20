@@ -11,4 +11,13 @@ ActiveRecord::Schema.define :version => 0 do
     t.column :name, :string
     t.column :type, :string
   end
+  
+  create_table :products, :force => true do |t|
+    t.column :title, :string
+    t.column :description, :text
+    t.column :type, :string
+    t.column :cents, :integer, :null => false, :default => 0
+    t.column :currency, :string, :null => false, :default => "USD"
+  end
+  
 end

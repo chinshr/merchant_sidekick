@@ -1,73 +1,10 @@
-require File.dirname(__FILE__) + '/../spec_helper'
-
-class ProductWithNameAndSku < ProductDummy
-  def name
-    "A beautiful name"
-  end
-  
-  def sku
-    "PR1234"
-  end
-  
-  def description 
-    "Wonderful name!"
-  end
-  
-  def taxable
-    true
-  end
-  
-end
-
-class ProductWithTitleAndNumber < ProductDummy
-  def title
-    "A beautiful title"
-  end
-  
-  def number
-    "PR1234"
-  end
-  
-  def description 
-    "Wonderful title!"
-  end
-
-  def new_record?
-    true
-  end
-end
-
-class ProductWithCopy < ProductDummy
-  
-  def copy_name(options={})
-    "customized name"
-  end
-  
-  def copy_item_number(options={})
-    "customized item number"
-  end
-
-  def copy_description(options={})
-    "customized description"
-  end
-  
-  def copy_price(options={})
-    Money.new(9999, 'USD')
-  end
-  
-end
-
-def valid_cart_line_item_attributes(attrs={})
-  {
-    :quantity => 5
-  }.merge(attrs)
-end
+require File.expand_path("../spec_helper", __FILE__)
 
 describe MerchantSidekick::ShoppingCart::LineItem do
-  fixtures :product_dummies
+  fixtures :products
 
   before(:each) do
-    @product = product_dummies(:widget)
+    @product = products(:widget)
   end
 
   it "should initialize and create" do
