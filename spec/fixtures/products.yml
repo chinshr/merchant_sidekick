@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+widget:
+  id: 1
+  title: Super Duper Widget
+  cents: 2995
+  currency: USD
+knob:
+  id: 2
+  title: Shiny Knob
+  cents: 399
+  currency: USD
