@@ -1,4 +1,5 @@
 require "active_record"
+require "active_support/core_ext" # TODO remove once we replace inheritable_attribute readers with configurations
 require "money"
 require 'merchant_sidekick/version'
 require 'merchant_sidekick/money'

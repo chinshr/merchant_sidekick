@@ -57,6 +57,10 @@ module MerchantSidekick
   
       class << self
   
+        def kind
+          name.underscore
+        end
+  
         # Returns the binding to be used in sub classes of Address
         def get_binding
           binding
@@ -395,9 +399,9 @@ module MerchantSidekick
         self.class.content_column_names
       end
 
-      # override in subclass 
-      # returns values :billing, :shipping
+      # E.g. :billing_addres, :shipping_address
       def kind
+        self.class.kind
       end
     end
   end

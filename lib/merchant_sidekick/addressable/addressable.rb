@@ -44,7 +44,8 @@ module MerchantSidekick #:nodoc:
           # acts_as_addressable :has_one => true
           #
           if attributes.empty?
-            has_one :address, :as => :addressable, :dependent => :destroy
+            has_one :address, :as => :addressable, :dependent => :destroy, 
+              :class_name => "MerchantSidekick::Addressable::Address"
             
             class_eval <<-THIS
             
@@ -120,7 +121,9 @@ module MerchantSidekick #:nodoc:
         elsif options[:has_many]
           # acts_as_addressable :billing, :shipping, :has_many => true
           #
-          has_many :addresses, :as => :addressable, :dependent => :destroy
+          has_many :addresses, :as => :addressable, :dependent => :destroy,
+            :class_name => "MerchantSidekick::Addressable::Address"
+            
           attributes.each do |attribute|
             address_class = <<-ADDRESS
               class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
@@ -165,14 +168,12 @@ module MerchantSidekick #:nodoc:
           end
         end
 
-=begin
         # write options
         write_inheritable_attribute(:acts_as_addressable_options, {
           :association_type => options[:has_one] ? :has_one : :has_many,
           :attributes => attributes
         })
         class_inheritable_reader :acts_as_addressable_options
-=end
 
         include MerchantSidekick::Addressable::InstanceMethods
         extend MerchantSidekick::Addressable::SingletonMethods
@@ -199,20 +200,18 @@ module MerchantSidekick #:nodoc:
     module InstanceMethods
 
       # addressable.find_addresses(:first, :billing, conditions)
-      def find_addresses(selector, kind, options={})
-        defaults = { :order => "created_at DESC" }
+      def find_addresses(selector, kind, options = {})
+        defaults = {:order => "created_at DESC"}
         options = defaults.merge(options).symbolize_keys
         
         if :has_one == acts_as_addressable_options[:association_type]
           conditions = options[:conditions] || ''
-          conditions = Address.sanitize_and_merge_conditions(conditions, [
-            "addressable_id = ? AND addressable_type = ? AND type LIKE ?",
-            self.id,
-            self.class.class_name,
-            "#{kind.to_s.pluralize.classify}Address"
-          ])
+          scoped = Address.scoped
+          scoped = scoped.where("addressable_id = ? AND addressable_type = ? AND type LIKE ?",
+            self.id, self.class.base_class.name, "#{kind.to_s.pluralize.classify}Address")
+          scoped = scoped.where(conditions) unless conditions.blank?
           options.merge!(:conditions => conditions)
-          Address.find(selector, options)
+          scoped.send(selector)
         elsif :has_many == acts_as_addressable_options[:association_type]
           self.send("#{kind}_addresses").find(selector, options)
         end

@@ -3,6 +3,7 @@ require "rspec"
 require "active_record"
 require "sqlite3"
 require "merchant_sidekick"
+require "ruby-debug"
 
 RSpec.configure do |config|
   # some (optional) config here
@@ -21,6 +22,19 @@ require "schema"
 at_exit {ActiveRecord::Base.connection.disconnect!}
 
 #--- MerchantSidekick::Addressable test models
+class MerchantSidekick::Addressable::Address
+  # extend to_s method for testing purposes only
+  def to_s_with_name
+    name = []
+    name << self.first_name
+    name << self.middle_name if MerchantSidekick::Addressable::Address.middle_name?
+    name << self.last_name
+    name = name.reject(&:blank?).join(" ")
+    [name, to_s_without_name].join(", ")
+  end
+  alias_method_chain :to_s, :name
+end
+
 class Addressable < ActiveRecord::Base
 end
 
