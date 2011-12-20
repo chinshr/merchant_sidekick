@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency "money"
   s.add_dependency "acts_as_list"
 
-  s.add_development_dependency "rspec"
+  s.add_development_dependency "rspec", "~> 2.7.0"
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "rake"
   # TODO remove

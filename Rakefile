@@ -1,7 +1,10 @@
-require "bundler/setup"
+require "rubygems"
+require "rake/testtask"
 require 'rspec/core/rake_task'
 
 RSpec::Core::RakeTask.new do |t|
-  t.pattern = "./spec/*_spec.rb" # don't need this, it's default.
-  # Put spec opts in a file named .rspec in root
+  t.rspec_opts = ["-c", "-f progress", "-r ./spec/spec_helper.rb"]
+  t.pattern = 'spec/**/*_spec.rb'
 end
+
+task :default => :spec
