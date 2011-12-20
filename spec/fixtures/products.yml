@@ -4,6 +4,7 @@ widget:
   title: Super Duper Widget
   cents: 2995
   currency: USD
+  
 knob:
   id: 2
   title: Shiny Knob

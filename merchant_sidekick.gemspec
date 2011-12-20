@@ -20,17 +20,18 @@ Gem::Specification.new do |s|
   s.add_dependency "money"
   s.add_dependency "acts_as_list"
 
+  #s.add_development_dependency "rspec", "~> 2.7.0"
   s.add_development_dependency "rspec", "~> 2.7.0"
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "rake"
-  # TODO remove
+  # TODO load depending which ruby is present
   s.add_development_dependency "ruby-debug19"
 
   s.description = <<-EOM
 EOM
 
   s.post_install_message = <<-EOM
-NOTE: This is an experimental port of the MerchantSidekick plugin.
+NOTE: This is an experimental port of the original MerchantSidekick plugin.
 
 https://github.com/chinshr/merchant_sidekick/README.md
 EOM

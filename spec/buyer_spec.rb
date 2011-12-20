@@ -29,7 +29,7 @@ describe "A buyer's model" do
 end
 
 describe "A buyer purchasing a sellable" do
-  fixtures :user_dummies, :product_dummies, :addresses
+  fixtures :users, :products, :addresses
   
   before(:each) do
     @user = user_dummies(:sam)

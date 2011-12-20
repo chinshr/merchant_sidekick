@@ -1,6 +1,7 @@
 require "bundler/setup"
 require "rspec"
 require "active_record"
+require "active_support"
 require "sqlite3"
 require "merchant_sidekick"
 require "ruby-debug"

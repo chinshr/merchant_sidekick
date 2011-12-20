@@ -12,9 +12,9 @@ require 'merchant_sidekick/addressable/address'
 ActiveRecord::Base.send(:include, MerchantSidekick::Addressable)
 
 require 'merchant_sidekick/acts_as_sellable'
-# require 'merchant_sidekick/acts_as_buyer'
-# require 'merchant_sidekick/acts_as_seller'
-#
+require 'merchant_sidekick/acts_as_buyer'
+require 'merchant_sidekick/acts_as_seller'
+
 require 'merchant_sidekick/line_item'
 # require 'merchant_sidekick/order'
 # require 'merchant_sidekick/purchase_order'
@@ -34,5 +34,5 @@ require 'merchant_sidekick/payments/payment'
 # require 'merchant_sidekick/payments/credit_card_payment'
 #
 ActiveRecord::Base.send(:include, MerchantSidekick::Sellable)
-# ActiveRecord::Base.send(:include, MerchantSidekick::Buyer)
-# ActiveRecord::Base.send(:include, MerchantSidekick::Seller)
+ActiveRecord::Base.send(:include, MerchantSidekick::Buyer)
+ActiveRecord::Base.send(:include, MerchantSidekick::Seller)
