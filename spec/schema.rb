@@ -19,5 +19,10 @@ ActiveRecord::Schema.define :version => 0 do
     t.column :cents, :integer, :null => false, :default => 0
     t.column :currency, :string, :null => false, :default => "USD"
   end
-  
+
+  create_table :users, :force => true do |t|
+    t.column :name, :string
+    t.column :email, :string
+    t.column :type, :string
+  end
 end

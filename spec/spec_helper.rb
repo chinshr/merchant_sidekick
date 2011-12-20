@@ -87,58 +87,41 @@ class Product < ActiveRecord::Base
 end
 
 class ProductWithNameAndSku < Product
-  def name
-    "A beautiful name"
-  end
-  
-  def sku
-    "PR1234"
-  end
-  
-  def description 
-    "Wonderful name!"
-  end
-  
-  def taxable
-    true
-  end
+  def name; "A beautiful name"; end
+  def sku; "PR1234"; end
+  def description; "Wonderful name!"; end
+  def taxable; true; end
 end
 
 class ProductWithTitleAndNumber < Product
-  def title
-    "A beautiful title"
-  end
-  
-  def number
-    "PR1234"
-  end
-  
-  def description 
-    "Wonderful title!"
-  end
-
-  def new_record?
-    true
-  end
+  def title; "A beautiful title"; end
+  def number; "PR1234"; end
+  def description; "Wonderful title!"; end
+  def new_record?; true; end
 end
 
 class ProductWithCopy < Product
-  def copy_name(options={})
-    "customized name"
-  end
-  
-  def copy_item_number(options = {})
-    "customized item number"
-  end
-
-  def copy_description(options = {})
-    "customized description"
-  end
-  
-  def copy_price(options = {})
-    Money.new(9999, "USD")
-  end
+  def copy_name(options={}); "customized name"; end
+  def copy_item_number(options = {}); "customized item number"; end
+  def copy_description(options = {}); "customized description"; end
+  def copy_price(options = {}); Money.new(9999, "USD"); end
 end
+
+class User < ActiveRecord::Base
+  acts_as_addressable :billing, :shipping
+end
+
+# TODO rename to Buyer
+class BuyingUser < User
+  acts_as_buyer
+end
+
+# TODO rename to Seller
+class SellingUser < User
+  acts_as_seller
+end
+
+#--- MerchantSidekick shopping cart
 
 def valid_cart_line_item_attributes(attributes = {})
   {:quantity => 5}.merge(attributes)
