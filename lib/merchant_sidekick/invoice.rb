@@ -117,13 +117,13 @@ module MerchantSidekick
 
     # Net total amount
     def net_total 
-      self.net_amount ||= line_items.inject(Money.new(0, self.currency || Money.default_currency)) {|sum,l| sum + l.net_amount }
+      self.net_amount ||= line_items.inject(Money.new(0, self.currency || ::Money.default_currency.iso_code)) {|sum,l| sum + l.net_amount }
     end
   
     # Calculates tax and sets the tax_amount attribute
     # It adds tax_amount across all line_items
     def tax_total
-      self.tax_amount = line_items.inject(Money.new(0, self.currency || Money.default_currency)) {|sum,l| sum + l.tax_amount }
+      self.tax_amount = line_items.inject(Money.new(0, self.currency || ::Money.default_currency.iso_code)) {|sum,l| sum + l.tax_amount }
       self.tax_rate # calculates average rate, leave for compatibility reasons
       self.tax_amount
     end

@@ -16,8 +16,8 @@ ActiveRecord::Schema.define :version => 0 do
     t.column :title, :string
     t.column :description, :text
     t.column :type, :string
-    t.column :cents, :integer, :null => false, :default => 0
-    t.column :currency, :string, :null => false, :default => "USD"
+    t.column :price_cents, :integer, :null => false, :default => 0
+    t.column :price_currency, :string, :null => false, :default => "USD"
   end
 
   create_table :users, :force => true do |t|

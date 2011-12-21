@@ -107,7 +107,7 @@ end
 #--- MerchantSidekick generic test models
 
 class Product < ActiveRecord::Base
-  money :price, :cents => :cents, :currency => :currency
+  money :price, :cents => :price_cents, :currency => :price_currency
   acts_as_sellable
   
   # TODO weird cart serialization workaround

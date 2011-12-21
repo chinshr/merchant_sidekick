@@ -15,9 +15,9 @@ module MerchantSidekick
     belongs_to :sellable, :polymorphic => true
   
     #--- mixins
-    money :net_amount, :cents => :net_cents, :currency => :currency
-    money :tax_amount, :cents => :tax_cents, :currency => :currency
-    money :gross_amount, :cents => :gross_cents, :currency => :currency
+    money :net_amount,   :cents => :net_cents,   :currency => "currency"
+    money :tax_amount,   :cents => :tax_cents,   :currency => "currency"
+    money :gross_amount, :cents => :gross_cents, :currency => "currency"
 
     #--- callbacks
     before_save :save_sellable
