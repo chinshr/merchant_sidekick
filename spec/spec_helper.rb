@@ -24,10 +24,26 @@ ActiveRecord::Migration.verbose = false
 require "schema"
 at_exit {ActiveRecord::Base.connection.disconnect!}
 
+#--- Fixture surrogates
+def users(key, options = {})
+  values = YAML::load_file(File.expand_path("../fixtures/users.yml", __FILE__))
+  (values[key.to_s]["type"] || "User").constantize.create! values[key.to_s].merge(options)
+end
+
+def products(key, options = {})
+  values = YAML::load_file(File.expand_path("../fixtures/products.yml", __FILE__))
+  (values[key.to_s]["type"] || "Product").constantize.create! values[key.to_s].merge(options)
+end
+
+def addresses(key, options = {})
+  values = YAML::load_file(File.expand_path("../fixtures/addresses.yml", __FILE__))
+  (values[key.to_s]["type"] || "MerchantSidekick::Addressable::Address").constantize.create! values[key.to_s].merge(options)
+end
+
 #--- MerchantSidekick::Addressable test models
 
 class MerchantSidekick::Addressable::Address
-  # extend to_s method for testing purposes only
+  # extends to_s to add name for testing purposes
   def to_s_with_name
     name = []
     name << self.first_name
@@ -80,7 +96,7 @@ end
 #--- MerchantSidekick generic test models
 
 class Product < ActiveRecord::Base
-  money :price
+  money :price, :cents => :cents, :currency => :currency
   acts_as_sellable
   
   # TODO weird cart serialization workaround
