@@ -1,9 +1,10 @@
 require "active_record"
 require "active_support/core_ext" # TODO remove once we replace inheritable_attribute readers with configurations
 require "money"
-require 'merchant_sidekick/version'
-require 'merchant_sidekick/money'
-require 'acts_as_list'
+require "merchant_sidekick/version"
+require "merchant_sidekick/money"
+require "acts_as_list"
+require "aasm"
 
 ActiveRecord::Base.extend MerchantSidekick::Money
 
@@ -16,11 +17,11 @@ require 'merchant_sidekick/acts_as_buyer'
 require 'merchant_sidekick/acts_as_seller'
 
 require 'merchant_sidekick/line_item'
-# require 'merchant_sidekick/order'
-# require 'merchant_sidekick/purchase_order'
+require 'merchant_sidekick/order'
+require 'merchant_sidekick/purchase_order'
 # require 'merchant_sidekick/sales_order'
-# require 'merchant_sidekick/invoice'
-# require 'merchant_sidekick/purchase_invoice'
+require 'merchant_sidekick/invoice'
+require 'merchant_sidekick/purchase_invoice'
 # require 'merchant_sidekick/sales_invoice'
 #
 # require 'merchant_sidekick/shopping_cart/cart'

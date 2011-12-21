@@ -21,6 +21,17 @@ end
 ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
 ActiveRecord::Migration.verbose = false
 
+def migration
+  yield ActiveRecord::Migration
+end
+
+def transaction
+  ActiveRecord::Base.connection.transaction do
+    yield
+    raise ActiveRecord::Rollback
+  end
+end
+
 require "schema"
 at_exit {ActiveRecord::Base.connection.disconnect!}
 

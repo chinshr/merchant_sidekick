@@ -9,10 +9,10 @@ module MerchantSidekick
       def acts_as_buyer
         include MerchantSidekick::Buyer::InstanceMethods
         class_eval do
-          has_many :orders, :as => :buyer, :dependent => :destroy
-          has_many :invoices, :as => :buyer, :dependent => :destroy
-          has_many :purchase_orders, :as => :buyer
-          has_many :purchase_invoices, :as => :buyer
+          has_many :orders, :as => :buyer, :dependent => :destroy, :class_name => "::MerchantSidekick::Order"
+          has_many :invoices, :as => :buyer, :dependent => :destroy, :class_name => "::MerchantSidekick::Invoice"
+          has_many :purchase_orders, :as => :buyer, :class_name => "::MerchantSidekick::PurchaseOrder"
+          has_many :purchase_invoices, :as => :buyer, :class_name => "::MerchantSidekick::PurchaseInvoice"
         end
       end
     end
@@ -50,7 +50,7 @@ module MerchantSidekick
         raise ArgumentError.new("No sellable (e.g. product) model provided") if sellables.empty?
         raise ArgumentError.new("Sellable models must have a :price") unless sellables.all? {|sellable| sellable.respond_to? :price}
         
-        returning self.purchase_orders.build do |po|
+        self.purchase_orders.build do |po|
           po.buyer = self
           po.seller = options[:seller]
           po.build_addresses
@@ -63,6 +63,7 @@ module MerchantSidekick
             po.line_items.push(li)
             sellable.send(:after_add_to_order, self) if sellable && sellable.respond_to?(:after_add_to_order)
           end
+          self
         end
       end
       

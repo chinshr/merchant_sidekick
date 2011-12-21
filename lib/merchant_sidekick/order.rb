@@ -5,76 +5,73 @@
 #
 module MerchantSidekick
   class Order < ActiveRecord::Base
+    include AASM
     self.table_name = "orders"
     
     belongs_to :seller, :polymorphic => true
     belongs_to :buyer, :polymorphic => true
-    has_many   :line_items, :dependent => :destroy
-    has_many   :payments, :as => :payable
-    has_many   :invoices, :foreign_key => :order_id
+    has_many   :line_items, :dependent => :destroy, :class_name => "::MerchantSidekick::LineItem"
+    has_many   :payments, :as => :payable, :class_name => "::MerchantSidekick::Payment"
+    has_many   :invoices, :foreign_key => :order_id, :class_name => "::MerchantSidekick::Invoice"
   
-    # mixins
-    money :net_amount,   :cents => :net_cents,   :currency => :currency             # net amount
-    money :tax_amount,   :cents => :tax_cents,   :currency => :currency             # tax amount
-    money :gross_amount, :cents => :gross_cents, :currency => :currency         # gross amount
-
+    money :net_amount,   :cents => :net_cents,   :currency => :currency
+    money :tax_amount,   :cents => :tax_cents,   :currency => :currency
+    money :gross_amount, :cents => :gross_cents, :currency => :currency
     acts_as_addressable :origin, :billing, :shipping, :has_one => true
-    acts_as_state_machine :initial => :created, :column => 'status'
+    
+    #--- state machine
+    aasm_initial_state :created
+    aasm :column => "status" do
+      state :created
+      state :pending, :enter => :enter_pending, :after => :after_pending
+      state :approved, :enter => :enter_approved, :after => :after_approved
+      state :shipping, :enter => :enter_shipping, :after => :after_shipping
+      state :shipped, :enter => :enter_shipped, :after => :after_shipped
+      state :received, :enter => :enter_received, :after => :after_received
+      state :returning, :enter => :enter_returning, :after => :after_returning
+      state :returned, :enter => :enter_returned, :after => :after_returned
+      state :refunded, :enter => :enter_refunded, :after => :after_refunded
+      state :canceled, :enter => :enter_canceled, :after => :after_canceled
+      
+      event :process_payment do
+        transitions :from => :created, :to => :pending, :guard => :guard_process_payment_from_created
+      end
 
-    #--- states
-    state :created
-    state :pending, :enter => :enter_pending, :after => :after_pending
-    state :approved, :enter => :enter_approved, :after => :after_approved
-    state :shipping, :enter => :enter_shipping, :after => :after_shipping
-    state :shipped, :enter => :enter_shipped, :after => :after_shipped
-    state :received, :enter => :enter_received, :after => :after_received
-    state :returning, :enter => :enter_returning, :after => :after_returning
-    state :returned, :enter => :enter_returned, :after => :after_returned
-    state :refunded, :enter => :enter_refunded, :after => :after_refunded
-    state :canceled, :enter => :enter_canceled, :after => :after_canceled
+      event :approve_payment do
+        transitions :from => :pending, :to => :approved, :guard => :guard_approve_payment_from_pending
+      end
+
+      event :process_shipping do
+        transitions :from => :approved, :to => :shipping, :guard => :guard_process_shipping_from_approved
+      end
+
+      event :ship do
+        transitions :from => :shipping, :to => :shipped, :guard => :guard_ship_from_shipping
+      end
+
+      event :confirm_reception do
+        transitions :from => :shipped, :to => :received, :guard => :guard_confirm_reception_from_shipped
+      end
+
+      event :reject do
+        transitions :from => :received, :to => :returning, :guard => :guard_reject_from_received
+      end
+
+      event :confirm_return do
+        transitions :from => :returning, :to => :returned, :guard => :guard_confirm_return_from_returning
+        transitions :from => :shipped, :to => :returned, :guard => :guard_confirm_return_from_shipped
+      end
+
+      event :refund do
+        transitions :from => :returned, :to => :refunded, :guard => :guard_refund_from_returned
+      end
+
+      event :cancel do
+        transitions :from => :created, :to => :canceled, :guard => :guard_cancel_from_created
+        transitions :from => :pending, :to => :canceled, :guard => :guard_cancel_from_pending
+      end
+    end
   
-    #--- events
-    event :process_payment do
-      transitions :from => :created, :to => :pending, :guard => :guard_process_payment_from_created
-    end
-
-    event :approve_payment do
-      transitions :from => :pending, :to => :approved, :guard => :guard_approve_payment_from_pending
-    end
-
-    event :process_shipping do
-      transitions :from => :approved, :to => :shipping, :guard => :guard_process_shipping_from_approved
-    end
-
-    event :ship do
-      transitions :from => :shipping, :to => :shipped, :guard => :guard_ship_from_shipping
-    end
-
-    event :confirm_reception do
-      transitions :from => :shipped, :to => :received, :guard => :guard_confirm_reception_from_shipped
-    end
-
-    event :reject do
-      transitions :from => :received, :to => :returning, :guard => :guard_reject_from_received
-    end
-
-    event :confirm_return do
-      transitions :from => :returning, :to => :returned, :guard => :guard_confirm_return_from_returning
-      transitions :from => :shipped, :to => :returned, :guard => :guard_confirm_return_from_shipped
-    end
-
-    event :refund do
-      transitions :from => :returned, :to => :refunded, :guard => :guard_refund_from_returned
-    end
-
-    event :cancel do
-      transitions :from => :created, :to => :canceled, :guard => :guard_cancel_from_created
-      transitions :from => :pending, :to => :canceled, :guard => :guard_cancel_from_pending
-    end
-  
-    #--- callbacks
-    before_save :total, :number
-
     # state transition callbacks, to be overwritten 
     def enter_pending; end
     def enter_approved; end
@@ -109,8 +106,10 @@ module MerchantSidekick
     def guard_cancel_from_created; true; end
     def guard_cancel_from_pending; true; end
 
+    #--- callbacks
+    before_save :total, :number
+
     #--- class methods
-  
     class << self
 
       # hex digest 16 char in length

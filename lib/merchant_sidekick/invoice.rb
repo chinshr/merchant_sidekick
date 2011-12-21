@@ -1,8 +1,8 @@
 # Baseclass for in- and outbound invoices.
 module MerchantSidekick
   class Invoice < ActiveRecord::Base
-    include ActionView::Helpers::TextHelper
-
+    include AASM
+    # include ActionView::Helpers::TextHelper
     self.table_name = "invoices"
 
     attr_accessor :authorization
@@ -13,55 +13,50 @@ module MerchantSidekick
     belongs_to :order
     has_many   :payments, :as => :payable, :dependent => :destroy
   
-    money :net_amount,   :cents => :net_cents,   :currency => :currency         # net amount
-    money :tax_amount,   :cents => :tax_cents,   :currency => :currency         # tax amount
-    money :gross_amount, :cents => :gross_cents, :currency => :currency         # gross amount
+    money :net_amount,   :cents => :net_cents,   :currency => :currency
+    money :tax_amount,   :cents => :tax_cents,   :currency => :currency
+    money :gross_amount, :cents => :gross_cents, :currency => :currency
 
     acts_as_addressable :origin, :billing, :shipping, :has_one => true
-    acts_as_state_machine :initial => :pending, :column => 'status'
+    
+    #--- state machine
+    aasm_initial_state :pending
+    aasm :column => "status" do
+      state :pending, :enter => :enter_pending, :after => :after_pending
+      state :authorized, :enter => :enter_authorized, :after => :after_authorized
+      state :paid, :enter => :enter_paid, :after => :after_paid
+      state :voided, :enter => :enter_voided, :after => :after_voided
+      state :refunded, :enter => :enter_refunded, :after => :after_refunded
+      state :payment_declined, :enter => :enter_payment_declined, :after => :after_payment_declined
 
-    #--- states
-    state :pending, :enter => :enter_pending, :after => :after_pending
-    state :authorized, :enter => :enter_authorized, :after => :after_authorized
-    state :paid, :enter => :enter_paid, :after => :after_paid
-    state :voided, :enter => :enter_voided, :after => :after_voided
-    state :refunded, :enter => :enter_refunded, :after => :after_refunded
-    state :payment_declined, :enter => :enter_payment_declined, :after => :after_payment_declined
+      event :payment_paid do
+        transitions :from => :pending, :to => :paid, :guard => :guard_payment_paid_from_pending
+      end
 
-    #--- events
-    event :payment_paid do
-      transitions :from => :pending, :to => :paid, :guard => :guard_payment_paid_from_pending
-    end
-  
-    event :payment_authorized do
-      transitions :from => :pending, :to => :authorized, :guard => :guard_payment_authorized_from_pending
-      transitions :from => :payment_declined, :to => :authorized, :guard => :guard_payment_authorized_from_payment_declined
-    end
+      event :payment_authorized do
+        transitions :from => :pending, :to => :authorized, :guard => :guard_payment_authorized_from_pending
+        transitions :from => :payment_declined, :to => :authorized, :guard => :guard_payment_authorized_from_payment_declined
+      end
 
-    event :payment_captured do
-      transitions :from => :authorized, :to => :paid, :guard => :guard_payment_captured_from_authorized
-    end
+      event :payment_captured do
+        transitions :from => :authorized, :to => :paid, :guard => :guard_payment_captured_from_authorized
+      end
 
-    event :payment_voided do
-      transitions :from => :authorized, :to => :voided, :guard => :guard_payment_voided_from_authorized
-    end
+      event :payment_voided do
+        transitions :from => :authorized, :to => :voided, :guard => :guard_payment_voided_from_authorized
+      end
 
-    event :payment_refunded do
-      transitions :from => :paid, :to => :refunded, :guard => :guard_payment_refunded_from_paid
-    end
+      event :payment_refunded do
+        transitions :from => :paid, :to => :refunded, :guard => :guard_payment_refunded_from_paid
+      end
 
-    event :transaction_declined do
-      transitions :from => :pending, :to => :payment_declined, :guard => :guard_transaction_declined_from_pending
-      transitions :from => :payment_declined, :to => :payment_declined, :guard => :guard_transaction_declined_from_payment_declined
-      transitions :from => :authorized, :to => :authorized, :guard => :guard_transaction_declined_from_authorized
+      event :transaction_declined do
+        transitions :from => :pending, :to => :payment_declined, :guard => :guard_transaction_declined_from_pending
+        transitions :from => :payment_declined, :to => :payment_declined, :guard => :guard_transaction_declined_from_payment_declined
+        transitions :from => :authorized, :to => :authorized, :guard => :guard_transaction_declined_from_authorized
+      end
     end
-  
-    #--- scopes
-    named_scope :paid, :conditions => ["invoices.status IN (?)", ['paid']]
-  
-    #--- callbacks
-    before_save :number
-  
+    
     # state transition callbacks
     def enter_pending; end
     def enter_authorized; end
@@ -88,8 +83,13 @@ module MerchantSidekick
     def guard_payment_authorized_from_pending; true; end
     def guard_payment_paid_from_pending; true; end
   
+    #--- scopes
+    scope :paid, lambda{where("invoices.status IN (?)", ["paid"])}
+  
+    #--- callbacks
+    before_save :number
+  
     #--- instance methods
-
     def number
       self[:number] ||= Order.generate_unique_id
     end

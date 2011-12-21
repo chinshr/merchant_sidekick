@@ -10,21 +10,17 @@ module MerchantSidekick
     cattr_accessor :tax_rate_class_name 
   
     #--- associations
-    belongs_to :order
-    belongs_to :invoice
+    belongs_to :order, :class_name => "::MerchantSidekick::Order"
+    belongs_to :invoice, :class_name => "::MerchantSidekick::Invoice"
     belongs_to :sellable, :polymorphic => true
   
     #--- mixins
-    money :net_amount, :cents => :net_cents, :currency => :currency             # net amount
-    money :tax_amount, :cents => :tax_cents, :currency => :currency             # tax amount
-    money :gross_amount, :cents => :gross_cents, :currency => :currency         # gross amount
+    money :net_amount, :cents => :net_cents, :currency => :currency
+    money :tax_amount, :cents => :tax_cents, :currency => :currency
+    money :gross_amount, :cents => :gross_cents, :currency => :currency
 
     #--- callbacks
     before_save :save_sellable
-
-    def save_sellable
-      sellable.save if sellable.new_record?
-    end
 
     #--- instance methods
   
@@ -74,6 +70,7 @@ module MerchantSidekick
     def calculate(a_sellable)
       if a_sellable && a_sellable.price
         tax_rate_class = tax_rate_class_name.camelize.constantize rescue nil
+        
         # calculate tax amounts
         #
         # If we want to provide tax rates based on the order's billing address location,
@@ -83,7 +80,7 @@ module MerchantSidekick
         #
         #   Tax.find_tax_rate({:origin => {...}, :destination => {...}})
         #   # where each hash provides :country_code => 'DE', :state_code => 'BY'
-        #
+        
         if tax_rate_class && a_sellable.respond_to?(:taxable?) && a_sellable.send(:taxable?)
           # find tax rate for billing address, country/province
           self.tax_rate = tax_rate_class.find_tax_rate(
@@ -97,13 +94,13 @@ module MerchantSidekick
             self.net_amount = a_sellable.price
             this_cents, this_currency = self.net_amount.cents, self.net_amount.currency
             this_tax_cents = ( Float( this_cents * self.tax_rate / 10) / 10 ).round
-            self.tax_amount = Money.new(this_tax_cents, this_currency)
+            self.tax_amount = ::Money.new(this_tax_cents, this_currency)
             self.gross_amount = self.net_amount + self.tax_amount
           else # price is gross
             # net = gross - tax
             this_gross_cents, this_currency = a_sellable.price.cents, a_sellable.price.currency
             this_net_cents = (this_gross_cents * Float(100) / Float(100 + self.tax_rate)).round
-            self.net_amount = Money.new(this_net_cents, this_currency)
+            self.net_amount = ::Money.new(this_net_cents, this_currency)
             self.gross_amount = a_sellable.price
             self.tax_amount = self.gross_amount - self.net_amount
           end
@@ -111,7 +108,7 @@ module MerchantSidekick
           # net = gross, tax = 0
           self.net_amount = a_sellable.price
           self.gross_amount = a_sellable.price
-          self.tax_amount = Money.new(0, a_sellable.currency)
+          self.tax_amount = ::Money.new(0, a_sellable.currency)
           self.tax_rate = 0
         end
       else
@@ -121,6 +118,10 @@ module MerchantSidekick
         self.tax_rate = 0
         self.currency = "USD"
       end
+    end
+    
+    def save_sellable
+      sellable.save if sellable.new_record?
     end
   
   end

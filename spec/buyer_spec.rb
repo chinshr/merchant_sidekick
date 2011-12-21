@@ -29,54 +29,70 @@ describe "A buyer's model" do
 end
 
 describe "A buyer purchasing a sellable" do
-  fixtures :users, :products, :addresses
+
+  def setup
+    @user = users(:sam)
+    @billing = @user.create_billing_address(addresses(:sam_billing).content_attributes)
+    @shipping = @user.create_shipping_address(addresses(:sam_shipping).content_attributes)
+    @product = products(:widget)
+  end
+  
+  def with_fixtures
+    setup
+    transaction yield
+  end
   
   before(:each) do
-    @user = user_dummies(:sam)
-    @user.create_billing_address(addresses(:sam_billing).content_attributes)
-    @user.create_shipping_address(addresses(:sam_shipping).content_attributes)
-    
-    @product = product_dummies(:widget)
   end
   
   it "should create a new order" do
-    lambda do
-      order_count = Order.count
-      order = @user.purchase @product
-      order.should be_an_instance_of(PurchaseOrder)
-      order.should be_valid
-      order.save!
-    end.should change(Order, :count)
+    with_fixtures do
+      lambda do
+        order_count = MerchantSidekick::Order.count
+        order = @user.purchase @product
+        order.should be_an_instance_of(MerchantSidekick::PurchaseOrder)
+        order.should be_valid
+        order.save!
+      end.should change(MerchantSidekick::Order, :count)
+    end
   end
   
   it "should add to buyers's orders" do
-    order = @user.purchase(@product)
-    order.save!
-    @user.orders.last.should == order
-    order.buyer.should == @user
+    with_fixtures do
+      order = @user.purchase(@product)
+      order.save!
+      @user.orders.last.should == order
+      order.buyer.should == @user
+    end
   end
   
   it "should create line items" do
-    order = @user.purchase(@product)
-    order.line_items.size.should == 1
-    order.line_items.first.sellable.should == @product
+    with_fixtures do
+      order = @user.purchase(@product)
+      order.line_items.size.should == 1
+      order.line_items.first.sellable.should == @product
+    end
   end
   
   it "should set line item amount to sellable price" do
-    order = @user.purchase @product
-    order.line_items.first.amount.should == @product.price
+    with_fixtures do
+      order = @user.purchase @product
+      order.line_items.first.amount.should == @product.price
+    end
   end
   
   it "should set line item amount to 0 if sellable does not have a price" do
-    @product.price = 0
-    order = @user.purchase @product
-    order.line_items.first.amount.should == 0.to_money
+    with_fixtures do
+      @product.price = 0
+      order = @user.purchase @product
+      order.line_items.first.amount.should == 0.to_money
+    end
   end
   
 end
 
 describe "A billable purchasing multiple sellables" do
-  fixtures :user_dummies, :product_dummies, :addresses
+  # fixtures :user_dummies, :product_dummies, :addresses
   
   before(:each) do
     @sally = user_dummies(:sally)
@@ -99,7 +115,7 @@ describe "A billable purchasing multiple sellables" do
 end
 
 describe "A billable purchasing a non-sellable model" do
-  fixtures :user_dummies, :product_dummies, :addresses
+  # fixtures :user_dummies, :product_dummies, :addresses
   
   before(:each) do
     @user = user_dummies(:sam)
