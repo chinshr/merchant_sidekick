@@ -1,9 +1,5 @@
 require File.expand_path("../spec_helper", __FILE__)
 
-def valid_line_item_attributes(attriubtes = {})
-  {:order_id => 1, :sellable_id => 1, :sellable_type => 'ProductDummy'}.merge(attriubtes)
-end
-
 describe MerchantSidekick::LineItem do
   it "should belong to an order" do
     lambda { MerchantSidekick::LineItem.new.order}.should_not raise_error
@@ -64,7 +60,6 @@ describe MerchantSidekick::LineItem, "a new line item" do
       @line_item.reload
       @line_item.amount.should == Money.new(1000, "USD")
     }.should change(MerchantSidekick::LineItem, :count)
-    
   end
   
 end
