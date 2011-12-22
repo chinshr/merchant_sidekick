@@ -85,8 +85,7 @@ describe "A buyer purchasing a sellable" do
 end
 
 describe "A billable purchasing multiple sellables" do
-  # fixtures :user_dummies, :product_dummies, :addresses
-  
+
   def setup
     @sally = users(:sally)
     @sally_billing = @sally.create_billing_address(addresses(:sally_billing).content_attributes)
@@ -107,11 +106,11 @@ describe "A billable purchasing multiple sellables" do
       @order.line_items.collect(&:sellable).should == @products
     end
   end
+
 end
 
 describe "A billable purchasing a non-sellable model" do
-  # fixtures :user_dummies, :product_dummies, :addresses
-  
+
   def setup
     @user = users(:sam)
     @billing = @user.create_billing_address(addresses(:sam_billing).content_attributes)
@@ -123,4 +122,5 @@ describe "A billable purchasing a non-sellable model" do
       lambda { @user.purchase @user }.should raise_error(ArgumentError)
     end
   end
+
 end
