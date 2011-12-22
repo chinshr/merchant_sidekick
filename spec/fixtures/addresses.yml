@@ -11,7 +11,7 @@ paid_order_billing_address:
   country: United States of America
   type: BillingAddress
   addressable_id: 2
-  addressable_type: Order
+  addressable_type: MerchantSidekick::Order
 paid_order_shipping_address:
   id: 3
   first_name: Sam
@@ -25,7 +25,7 @@ paid_order_shipping_address:
   country: USA
   type: ShippingAddress
   addressable_id: 2
-  addressable_type: Order
+  addressable_type: MerchantSidekick::Order
 paid_order_origin_address:
   id: 4
   company_name: Coal Headware
@@ -38,7 +38,7 @@ paid_order_origin_address:
   country: USA
   type: OriginAddress
   addressable_id: 2
-  addressable_type: Order
+  addressable_type: MerchantSidekick::Order
 sam_billing:
   id: 5
   first_name: Sam
@@ -52,7 +52,7 @@ sam_billing:
   country: USA
   type: BillingAddress
   addressable_id: 1
-  addressable_type: DummyUser
+  addressable_type: User
 sam_shipping:
   id: 6
   first_name: Sam
@@ -66,7 +66,7 @@ sam_shipping:
   country: USA
   type: ShippingAddress
   addressable_id: 1
-  addressable_type: DummyUser
+  addressable_type: User
 sally_billing:
   id: 7
   first_name: Sally
@@ -80,7 +80,7 @@ sally_billing:
   country: United States of America
   type: BillingAddress
   addressable_id: 2
-  addressable_type: DummyUser
+  addressable_type: User
 sally_shipping:
   id: 8
   first_name: Sally
@@ -94,4 +94,4 @@ sally_shipping:
   country: United States of America
   type: ShippingAddress
   addressable_id: 2
-  addressable_type: DummyUser
+  addressable_type: User

@@ -124,6 +124,8 @@ module MerchantSidekick
 
     #--- instance methods
 
+    alias_method :current_state, :aasm_current_state
+
     def number
       self[:number] ||= Order.generate_unique_id
     end
@@ -153,18 +155,9 @@ module MerchantSidekick
     # It adds tax_amount across all line_items
     def tax_total
       self.tax_amount = line_items.inject(0.to_money) {|sum,l| sum + l.tax_amount }
-      self.tax_rate # calculates average rate, leave for compatibility reasons
       self.tax_amount
     end
 
-    # Since each line_item has it's own tax_rate now, we will calculate
-    # the average tax_rate across all line items and store it in the database
-    # The attribute tax_rate will not have any relevance in Order/Invoice to 
-    # calculate the tax_amount anymore
-    def tax_rate
-      write_attribute(:tax_rate, Float(line_items.inject(0) {|sum, l| sum + l.tax_rate}) / line_items.size)
-    end
-  
     # Gross amount including tax
     def gross_total
       self.gross_amount = self.net_total + self.tax_total
@@ -178,7 +171,7 @@ module MerchantSidekick
     # is the number of line items stored in the order, though not to be 
     # confused by the items_count
     def line_items_count
-      self.line_items.size
+      self.line_items.count
     end
   
     # total number of items purchased
@@ -224,10 +217,6 @@ module MerchantSidekick
 
     # Recalculates the order, adding order lines, tax and gross totals
     def calculate
-      self.net_amount = nil
-      self.tax_amount = nil
-      self.gross_amount = nil
-      self.tax_rate = nil
       self.total
     end
   

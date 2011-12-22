@@ -82,6 +82,13 @@ describe "A buyer purchasing a sellable" do
     end
   end
   
+  it "should initialize but not save the order" do
+    transaction do
+      @order = @user.purchase @product
+      @order.should be_new_record
+    end
+  end
+  
 end
 
 describe "A billable purchasing multiple sellables" do

@@ -28,7 +28,6 @@ class CreateMerchantSidekickBillingTables < ActiveRecord::Migration
       t.integer  "tax_cents",                                 :default => 0,         :null => false
       t.integer  "gross_cents",                               :default => 0,         :null => false
       t.string   "currency",                     :limit => 3, :default => "USD",     :null => false
-      t.float    "tax_rate",                                  :default => 0.0,       :null => false
       t.string   "type"
       t.string   "status",                                    :default => "created", :null => false
       t.string   "number"
@@ -50,7 +49,6 @@ class CreateMerchantSidekickBillingTables < ActiveRecord::Migration
       t.integer  "net_cents",               :default => 0,         :null => false
       t.integer  "tax_cents",               :default => 0,         :null => false
       t.integer  "gross_cents",             :default => 0,         :null => false
-      t.float    "tax_rate",                :default => 0.0,       :null => false
       t.string   "currency",                :default => "USD",     :null => false
       t.string   "type"
       t.string   "number"

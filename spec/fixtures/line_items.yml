@@ -1,8 +1,18 @@
-
 sams_widget:
   id: 1
   order_id: 1
   sellable_id: 1
   sellable_type: Product
-  cents: 999
+  net_cents: 2995
+  tax_cents: 0
+  gross_cents: 2995
+  currency: USD
+sams_knob:
+  id: 2
+  order_id: 1
+  sellable_id: 2
+  sellable_type: Product
+  net_cents: 399
+  tax_cents: 0
+  gross_cents: 399
   currency: USD

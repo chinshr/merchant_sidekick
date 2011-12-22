@@ -52,6 +52,21 @@ def addresses(key, options = {})
   (values[key.to_s]["type"] || "MerchantSidekick::Addressable::Address").constantize.create! values[key.to_s].merge(options)
 end
 
+def orders(key, options = {})
+  values = YAML::load_file(File.expand_path("../fixtures/orders.yml", __FILE__))
+  (values[key.to_s]["type"] || "MerchantSidekick::Order").constantize.create! values[key.to_s].merge(options)
+end
+
+def payments(key, options = {})
+  values = YAML::load_file(File.expand_path("../fixtures/payments.yml", __FILE__))
+  (values[key.to_s]["type"] || "MerchantSidekick::Payment").constantize.create! values[key.to_s].merge(options)
+end
+
+def line_items(key, options = {})
+  values = YAML::load_file(File.expand_path("../fixtures/line_items.yml", __FILE__))
+  (values[key.to_s]["type"] || "MerchantSidekick::LineItem").constantize.create! values[key.to_s].merge(options)
+end
+
 #--- MerchantSidekick::Addressable test models
 
 class MerchantSidekick::Addressable::Address

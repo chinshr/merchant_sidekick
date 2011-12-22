@@ -14,7 +14,7 @@ module MerchantSidekick
       if options[:currency]
         class_eval <<-RUBY
           def currency
-            ::Money::Currency.wrap("self[:#{options[:currency]}]")
+            ::Money::Currency.wrap(self[:#{options[:currency]}])
           end
           
           def currency_as_string

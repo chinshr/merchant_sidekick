@@ -84,12 +84,14 @@ module MerchantSidekick
     def guard_payment_paid_from_pending; true; end
   
     #--- scopes
-    scope :paid, lambda{where("invoices.status IN (?)", ["paid"])}
+    scope :paid, where(:status => "paid")
   
     #--- callbacks
     before_save :number
   
     #--- instance methods
+    alias_method :current_state, :aasm_current_state
+
     def number
       self[:number] ||= Order.generate_unique_id
     end
@@ -117,25 +119,16 @@ module MerchantSidekick
 
     # Net total amount
     def net_total 
-      self.net_amount ||= line_items.inject(Money.new(0, self.currency || ::Money.default_currency.iso_code)) {|sum,l| sum + l.net_amount }
+      self.net_amount ||= line_items.inject(::Money.new(0, self.currency || ::Money.default_currency.iso_code)) {|sum,line| sum + line.net_amount}
     end
   
     # Calculates tax and sets the tax_amount attribute
     # It adds tax_amount across all line_items
     def tax_total
-      self.tax_amount = line_items.inject(Money.new(0, self.currency || ::Money.default_currency.iso_code)) {|sum,l| sum + l.tax_amount }
-      self.tax_rate # calculates average rate, leave for compatibility reasons
+      self.tax_amount = line_items.inject(::Money.new(0, self.currency || ::Money.default_currency.iso_code)) {|sum,line| sum + line.tax_amount}
       self.tax_amount
     end
 
-    # Since each line_item has it's own tax_rate now, we will calculate
-    # the average tax_rate across all line items and store it in the database
-    # The attribute tax_rate will not have any relevance in Order/Invoice to 
-    # calculate the tax_amount anymore
-    def tax_rate
-      self[:tax_rate] ||= Float(line_items.inject(0) {|sum, l| sum + l.tax_rate}) / line_items.size
-    end
-  
     # Gross amount including tax
     def gross_total
       self.gross_amount ||= self.net_total + self.tax_total
@@ -180,7 +173,6 @@ module MerchantSidekick
       self.net_amount = nil
       self.tax_amount = nil
       self.gross_amount = nil
-      self.tax_rate = nil
       self.total
     end
   end
