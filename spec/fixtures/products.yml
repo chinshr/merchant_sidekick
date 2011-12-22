@@ -2,11 +2,11 @@
 widget:
   id: 1
   title: Super Duper Widget
-  cents: 2995
-  currency: USD
+  price_cents: 2995
+  price_currency: USD
   
 knob:
   id: 2
   title: Shiny Knob
-  cents: 399
-  currency: USD
+  price_cents: 399
+  price_currency: USD

@@ -27,6 +27,7 @@ end
 
 def transaction
   ActiveRecord::Base.connection.transaction do
+    send(:setup) if respond_to?(:setup)
     yield
     raise ActiveRecord::Rollback
   end
@@ -139,12 +140,12 @@ class User < ActiveRecord::Base
   acts_as_addressable :billing, :shipping
 end
 
-# TODO rename to Buyer
+# TODO rename to just "Buyer"
 class BuyingUser < User
   acts_as_buyer
 end
 
-# TODO rename to Seller
+# TODO rename to just "Seller"
 class SellingUser < User
   acts_as_seller
 end

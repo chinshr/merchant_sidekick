@@ -21,54 +21,54 @@ module MerchantSidekick
     
     #--- state machine
     aasm_initial_state :created
-    aasm :column => "status" do
+    aasm :column               => "status" do
       state :created
-      state :pending, :enter => :enter_pending, :after => :after_pending
-      state :approved, :enter => :enter_approved, :after => :after_approved
-      state :shipping, :enter => :enter_shipping, :after => :after_shipping
-      state :shipped, :enter => :enter_shipped, :after => :after_shipped
-      state :received, :enter => :enter_received, :after => :after_received
+      state :pending, :enter   => :enter_pending, :after => :after_pending
+      state :approved, :enter  => :enter_approved, :after => :after_approved
+      state :shipping, :enter  => :enter_shipping, :after => :after_shipping
+      state :shipped, :enter   => :enter_shipped, :after => :after_shipped
+      state :received, :enter  => :enter_received, :after => :after_received
       state :returning, :enter => :enter_returning, :after => :after_returning
-      state :returned, :enter => :enter_returned, :after => :after_returned
-      state :refunded, :enter => :enter_refunded, :after => :after_refunded
-      state :canceled, :enter => :enter_canceled, :after => :after_canceled
+      state :returned, :enter  => :enter_returned, :after => :after_returned
+      state :refunded, :enter  => :enter_refunded, :after => :after_refunded
+      state :canceled, :enter  => :enter_canceled, :after => :after_canceled
       
       event :process_payment do
-        transitions :from => :created, :to => :pending, :guard => :guard_process_payment_from_created
+        transitions :from      => :created, :to => :pending, :guard => :guard_process_payment_from_created
       end
 
       event :approve_payment do
-        transitions :from => :pending, :to => :approved, :guard => :guard_approve_payment_from_pending
+        transitions :from      => :pending, :to => :approved, :guard => :guard_approve_payment_from_pending
       end
 
       event :process_shipping do
-        transitions :from => :approved, :to => :shipping, :guard => :guard_process_shipping_from_approved
+        transitions :from      => :approved, :to => :shipping, :guard => :guard_process_shipping_from_approved
       end
 
       event :ship do
-        transitions :from => :shipping, :to => :shipped, :guard => :guard_ship_from_shipping
+        transitions :from      => :shipping, :to => :shipped, :guard => :guard_ship_from_shipping
       end
 
       event :confirm_reception do
-        transitions :from => :shipped, :to => :received, :guard => :guard_confirm_reception_from_shipped
+        transitions :from      => :shipped, :to => :received, :guard => :guard_confirm_reception_from_shipped
       end
 
       event :reject do
-        transitions :from => :received, :to => :returning, :guard => :guard_reject_from_received
+        transitions :from      => :received, :to => :returning, :guard => :guard_reject_from_received
       end
 
       event :confirm_return do
-        transitions :from => :returning, :to => :returned, :guard => :guard_confirm_return_from_returning
-        transitions :from => :shipped, :to => :returned, :guard => :guard_confirm_return_from_shipped
+        transitions :from      => :returning, :to => :returned, :guard => :guard_confirm_return_from_returning
+        transitions :from      => :shipped, :to => :returned, :guard => :guard_confirm_return_from_shipped
       end
 
       event :refund do
-        transitions :from => :returned, :to => :refunded, :guard => :guard_refund_from_returned
+        transitions :from      => :returned, :to => :refunded, :guard => :guard_refund_from_returned
       end
 
       event :cancel do
-        transitions :from => :created, :to => :canceled, :guard => :guard_cancel_from_created
-        transitions :from => :pending, :to => :canceled, :guard => :guard_cancel_from_pending
+        transitions :from      => :created, :to => :canceled, :guard => :guard_cancel_from_created
+        transitions :from      => :pending, :to => :canceled, :guard => :guard_cancel_from_pending
       end
     end
   
@@ -113,8 +113,11 @@ module MerchantSidekick
     class << self
 
       # hex digest 16 char in length
+      # TODO change this to customize number schema
       def generate_unique_id
-        Digest::MD5.hexdigest("#{Time.now.utc.to_i}#{rand(2 ** 128)}")[0..6]
+        value = Digest::MD5.hexdigest("#{Time.now.utc.to_i}#{rand(2 ** 128)}")[0..6]
+        value.encode! 'utf-8'
+        value
       end
     
     end
