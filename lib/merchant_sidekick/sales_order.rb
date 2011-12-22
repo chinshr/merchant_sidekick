@@ -1,7 +1,7 @@
 # Implements inbound orders, i.e. when merchant sells a product.
 module MerchantSidekick
   class SalesOrder < Order
-    belongs_to :sales_invoice, :foreign_key => :invoice_id
+    belongs_to :sales_invoice, :foreign_key => :invoice_id, :class_name => "::MerchantSidekick::SalesInvoice"
   
     # Cash the order and generate invoice
     def cash(payment_object, options={})
@@ -31,7 +31,7 @@ module MerchantSidekick
   
     # used in build_invoice to determine which type of invoice
     def to_invoice_class_name
-      'SalesInvoice'
+      "MerchantSidekick::SalesInvoice"
     end
   
     def invoice

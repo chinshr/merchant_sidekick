@@ -50,7 +50,7 @@ module MerchantSidekick
         raise ArgumentError.new("No sellable (e.g. product) model provided") if sellables.empty?
         raise ArgumentError.new("Sellable models must have a :price") unless sellables.all? {|sellable| sellable.respond_to? :price}
             
-        returning self.sales_orders.build do |so|
+        self.sales_orders.build do |so|
           so.buyer = options[:buyer]
           so.build_addresses
           
@@ -63,7 +63,7 @@ module MerchantSidekick
             so.line_items.push(li)
             sellable.send(:after_add_to_order, self) if sellable && sellable.respond_to?(:after_add_to_order)
           end
-          
+          self
         end
       end
       

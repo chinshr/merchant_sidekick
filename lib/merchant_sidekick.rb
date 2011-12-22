@@ -19,11 +19,11 @@ require 'merchant_sidekick/acts_as_seller'
 require 'merchant_sidekick/line_item'
 require 'merchant_sidekick/order'
 require 'merchant_sidekick/purchase_order'
-# require 'merchant_sidekick/sales_order'
+require 'merchant_sidekick/sales_order'
 require 'merchant_sidekick/invoice'
 require 'merchant_sidekick/purchase_invoice'
-# require 'merchant_sidekick/sales_invoice'
-#
+require 'merchant_sidekick/sales_invoice'
+
 # require 'merchant_sidekick/shopping_cart/cart'
 # require 'merchant_sidekick/shopping_cart/line_item'
 #
