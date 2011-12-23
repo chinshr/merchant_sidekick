@@ -7,11 +7,11 @@ module MerchantSidekick
 
     attr_accessor :authorization
 
-    belongs_to :seller, :polymorphic => true  # originator
-    belongs_to :buyer, :polymorphic => true  # buyer or seller
-    has_many   :line_items
-    belongs_to :order
-    has_many   :payments, :as => :payable, :dependent => :destroy
+    belongs_to :seller, :polymorphic => true
+    belongs_to :buyer, :polymorphic => true
+    has_many   :line_items, :class_name => "MerchantSidekick::LineItem"
+    belongs_to :order, :class_name => "MerchantSidekick::Order"
+    has_many   :payments, :as => :payable, :dependent => :destroy, :class_name => "MerchantSidekick::Payments::Payment"
   
     money :net_amount,   :cents => :net_cents,   :currency => :currency
     money :tax_amount,   :cents => :tax_cents,   :currency => :currency

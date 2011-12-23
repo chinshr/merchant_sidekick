@@ -14,14 +14,17 @@ module MerchantSidekick
 
       #--- class methods
   
-      # determines which payment class to use based on the payment object passed.
-      # overriden this if other payment types must be supported, like bank
+      # Determines which payment class to use based on the payment object passed.
+      # overriden this if other payment types must be supported, e.g. for bank
       # transfer, etc.
       # 
-      # e.g. Payment.class_for(ActiveMerchant::Billing::CreditCard.new(...))
-      #   returns CreditCardPayment class
+      # E.g. 
+      #
+      #   Payment.class_for(ActiveMerchant::Billing::CreditCard.new(...))
+      #   #=>  MerchantSidekick::Payments::CreditCardPayment
+      
       def self.class_for(payment_object)
-        CreditCardPayment
+        MerchantSidekick::Payments::CreditCardPayment
       end
   
       def self.content_column_names
@@ -50,10 +53,10 @@ module MerchantSidekick
       def content_column_names
         self.class.content_column_names
       end
-
-      #--- exceptions
-      class AuthorizationError < StandardError; end
-  
     end
+    
+    # MerchantSidekick::Payments::AuthorizationError
+    class AuthorizationError < StandardError; end
+    
   end
 end

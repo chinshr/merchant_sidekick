@@ -21,9 +21,12 @@ end
 ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
 ActiveRecord::Migration.verbose = false
 
-def migration
-  yield ActiveRecord::Migration
-end
+require "schema"
+at_exit {ActiveRecord::Base.connection.disconnect!}
+
+Money.default_currency = Money::Currency.wrap("USD")
+
+#--- Sudo fixtures
 
 def transaction
   ActiveRecord::Base.connection.transaction do
@@ -33,10 +36,6 @@ def transaction
   end
 end
 
-require "schema"
-at_exit {ActiveRecord::Base.connection.disconnect!}
-
-#--- Fixture surrogates
 def users(key, options = {})
   values = YAML::load_file(File.expand_path("../fixtures/users.yml", __FILE__))
   (values[key.to_s]["type"] || "User").constantize.create! values[key.to_s].merge(options)
@@ -171,3 +170,78 @@ def valid_cart_line_item_attributes(attributes = {})
   {:quantity => 5}.merge(attributes)
 end
 
+#--- ActiveMerchant related helpers
+
+def valid_credit_card_attributes(attributes = {})
+  {
+    :number             => "1",
+    :first_name         => "Claudio",
+    :last_name          => "Almende",
+    :month              => "8",
+    :year               => "#{ Time.now.year + 1 }",
+    :verification_value => '123',
+    :type               => 'visa'
+  }.merge(attributes)
+end
+
+def invalid_credit_card_attributes(attributes = {})
+  {
+    :first_name => "first",
+    :last_name  => "last",
+    :month      => "8",
+    :year       => Time.now.year + 1,
+    :number     => "2",
+    :type       => "bogus"
+  }.merge(attributes)
+end
+
+def credit_card(options={})
+  ActiveMerchant::Billing::CreditCard.new(valid_credit_card_attributes(options))
+end
+
+def valid_credit_card(options={})
+  credit_card(valid_credit_card_attributes(options))
+end
+
+def invalid_credit_card(options={})
+  credit_card(invalid_credit_card_attributes(options))
+end
+
+module ActiveMerchant
+  module Billing
+    class BogusGateway < Gateway
+      
+      # Transfers money to one or multiple recipients (bulk transfer).
+      #
+      # Overloaded activemerchant bogus gateways to support transfers, similar 
+      # to Paypal Website Payments Pro functionality.
+      #
+      # E.g.
+      #
+      #   @gateway.transfer 1000, "bob@example.com",
+      #     :subject => "The money I owe you", :note => "Sorry, it's coming in late."
+      #
+      #   gateway.transfer [1000, 'fred@example.com'],
+      #     [2450, 'wilma@example.com', :note => 'You will receive an extra payment on March 24.'],
+      #     [2000, 'barney@example.com'],
+      #     :subject => "Salary January.", :note => "Thanks for your hard work."
+      
+      def transfer(money, paypal_account, options={})
+        if paypal_account == 'fail@error.tst'
+          Response.new(false, FAILURE_MESSAGE, {:paid_amount => money.to_s, :error => FAILURE_MESSAGE },:test => true)
+        elsif paypal_account == 'error@error.tst'
+          raise Error, ERROR_MESSAGE
+        elsif /[\w-]+(?:\.[\w-]+)*@(?:[\w-]+\.)+[a-zA-Z]{2,7}$/i.match(paypal_account)
+          Response.new(true, SUCCESS_MESSAGE, {:paid_amount => money.to_s}, :test => true)
+        else
+          raise Error, ERROR_MESSAGE
+        end
+      end
+      
+    end
+  end
+end
+
+MerchantSidekick::Gateways::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new
+# ActiveMerchant::Billing::CreditCard.require_verification_value = true
+# MerchantSidekick::LineItem.tax_rate_class_name = "TaxRate"

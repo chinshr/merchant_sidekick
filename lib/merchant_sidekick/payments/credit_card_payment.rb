@@ -25,7 +25,7 @@ module MerchantSidekick
             # e.g. :authorize_net_gateway -> AuthorizeNetGateway.gateway
             @@gateway = @@gateway.to_s.classify.constantize.gateway
           else
-            @@gateway = Gateway.default_gateway
+            @@gateway = MerchantSidekick::Gateways::Gateway.default_gateway
           end
         end
     

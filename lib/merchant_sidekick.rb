@@ -5,6 +5,7 @@ require "merchant_sidekick/version"
 require "merchant_sidekick/money"
 require "acts_as_list"
 require "aasm"
+require "active_merchant"
 
 ActiveRecord::Base.extend MerchantSidekick::Money
 
@@ -27,13 +28,13 @@ require 'merchant_sidekick/sales_invoice'
 # require 'merchant_sidekick/shopping_cart/cart'
 # require 'merchant_sidekick/shopping_cart/line_item'
 #
-# require 'merchant_sidekick/gateways/gateway'
-# require 'merchant_sidekick/gateways/authorize_net_gateway'
-# require 'merchant_sidekick/gateways/paypal_gateway'
-#
+require 'merchant_sidekick/gateways/gateway'
+require 'merchant_sidekick/gateways/authorize_net_gateway'
+require 'merchant_sidekick/gateways/paypal_gateway'
+
 require 'merchant_sidekick/payments/payment'
-# require 'merchant_sidekick/payments/credit_card_payment'
-#
+require 'merchant_sidekick/payments/credit_card_payment'
+
 ActiveRecord::Base.send(:include, MerchantSidekick::Sellable)
 ActiveRecord::Base.send(:include, MerchantSidekick::Buyer)
 ActiveRecord::Base.send(:include, MerchantSidekick::Seller)

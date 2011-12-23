@@ -1,7 +1,7 @@
 # Implements an outbound invoice.
 module MerchantSidekick
   class PurchaseInvoice < Invoice
-    belongs_to :purchase_order, :foreign_key => :order_id
+    belongs_to :purchase_order, :foreign_key => :order_id, :class_name => "MerchantSidekick::PurchaseOrder"
   
     # overrides superclass
     def purchase_invoice?
@@ -12,7 +12,7 @@ module MerchantSidekick
     # payment_object is the credit_card instance or other payment objects
     def authorize(payment_object, options={})
       transaction do
-        authorization = Payment.class_for(payment_object).authorize(
+        authorization = MerchantSidekick::Payments::Payment.class_for(payment_object).authorize(
           gross_total,
           payment_object,
           payment_options(options)
@@ -21,12 +21,12 @@ module MerchantSidekick
         self.push_payment(authorization)
 
         if authorization.success?
-          save(false)
+          save(:validate => false)
           payment_authorized!
         else
           # we don't want to save the payment and related objects
           # when the authorization fails
-  #        transaction_declined!
+          # transaction_declined!
         end
         authorization
       end
@@ -40,11 +40,11 @@ module MerchantSidekick
     #
     # E.g.
     #
-    #    @order = person.purchase(@sellable)
+    #    @order = person.purchase(@product)
     #    @payment = @order.authorize(@credit_card)
     #    ...
     #    @order.capture
-    #    @order.invoice.paid?
+    #    @order.invoice.paid? #=> true
     #
     def capture(options={})
       transaction do
@@ -57,7 +57,7 @@ module MerchantSidekick
         
           self.push_payment(capture_result)
 
-          save(false)
+          save(:validate => false)
 
           if capture_result.success?
             payment_captured!
@@ -93,7 +93,7 @@ module MerchantSidekick
           )
           self.push_payment(void_result)
 
-          save(false)
+          save(:validate => false)
 
           if void_result.success?
             payment_voided!
@@ -122,7 +122,7 @@ module MerchantSidekick
           )
           self.push_payment(credit_result)
 
-          save(false)
+          save(:validate => false)
 
           if credit_result.success?
             payment_refunded!
@@ -137,14 +137,14 @@ module MerchantSidekick
     # Purchase invoice, combines authorization and capture in one step
     def purchase(payment_object, options={})
       transaction do
-        purchase_result = Payment.class_for(payment_object).purchase(
+        purchase_result = MerchantSidekick::Payments::Payment.class_for(payment_object).purchase(
           gross_total,
           payment_object,
           payment_options(options)
         )
         self.push_payment(purchase_result)
 
-        save(false)
+        save(:validate => false)
 
         if purchase_result.success?
           payment_paid!
