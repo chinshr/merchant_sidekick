@@ -20,8 +20,7 @@ describe MerchantSidekick::PurchaseInvoice do
     @line_item = MerchantSidekick::LineItem.new(
       :order => nil,
       :invoice => @invoice,
-      :sellable => @product,
-      :tax_rate => 0
+      :sellable => @product
     )
     @invoice.line_items.push(@line_item)
     
