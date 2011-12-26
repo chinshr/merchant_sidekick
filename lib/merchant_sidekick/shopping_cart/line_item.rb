@@ -75,7 +75,7 @@ module MerchantSidekick
           else
             a_product.send(:price)
           end
-          product_unit_price = Money.new(1, self.currency || 'USD') + product_unit_price - Money.new(1, self.currency || 'USD')
+          product_unit_price = ::Money.new(1, self.currency || 'USD') + product_unit_price - ::Money.new(1, self.currency || 'USD')
           self.unit_price = product_unit_price
         end
         self.product_without_price = a_product

@@ -1,7 +1,7 @@
 # Implements outbound orders, i.e. the merchant sells a product to a user
 module MerchantSidekick
   class PurchaseOrder < Order
-    has_many :purchase_invoices, :foreign_key => :order_id
+    has_many :purchase_invoices, :foreign_key => :order_id, :class_name => "MerchantSidekick::PurchaseInvoice"
 
     # Authorizes a payment over the order gross amount
     def authorize(payment_object, options={})
@@ -14,6 +14,7 @@ module MerchantSidekick
         self.build_invoice unless self.last_unsaved_invoice
         authorization_result = self.last_unsaved_invoice.authorize(payment_object, options)
         if authorization_result.success?
+          debugger
           process_payment!
         end
         buyer.send(:after_authorize_payment, self) if buyer && buyer.respond_to?(:after_authorize_payment)
@@ -240,7 +241,6 @@ module MerchantSidekick
       new_invoice = self.purchase_invoices.build( 
         :line_items => self.duplicate_line_items,
         :net_amount => self.net_total,
-        :tax_rate => self.tax_rate,
         :tax_amount => self.tax_total,
         :gross_amount => self.gross_total,
         :buyer => self.buyer,

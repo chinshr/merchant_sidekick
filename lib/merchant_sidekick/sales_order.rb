@@ -46,7 +46,6 @@ module MerchantSidekick
       new_invoice = self.build_sales_invoice( 
         :line_items => self.line_items,
         :net_amount => self.net_total,
-        :tax_rate => self.tax_rate,
         :tax_amount => self.tax_total,
         :gross_amount => self.gross_total,
         :buyer => self.buyer,

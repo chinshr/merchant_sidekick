@@ -170,9 +170,11 @@ module MerchantSidekick
 
     # Recalculates the order, adding order lines, tax and gross totals
     def calculate
+=begin
       self.net_amount = nil
       self.tax_amount = nil
       self.gross_amount = nil
+=end
       self.total
     end
   end

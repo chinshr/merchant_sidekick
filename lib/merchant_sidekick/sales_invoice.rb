@@ -2,7 +2,7 @@
 module MerchantSidekick
   class SalesInvoice < Invoice
     #--- associations
-    has_many :sales_orders
+    #has_many :sales_orders, :class_name => "MerchantSidekick::SalesOrder"
   
     #--- instance methods
   
@@ -13,14 +13,14 @@ module MerchantSidekick
     # cash invoice, combines authorization and capture in one step
     def cash(payment_object, options={})
       transaction do
-        cash_result = Payment.class_for(payment_object).transfer(
+        cash_result = MerchantSidekick::Payments::Payment.class_for(payment_object).transfer(
           gross_total,
           payment_object,
           payment_options(options)
         )
         self.push_payment(cash_result)
 
-        save(false)
+        save(:validate => false)
 
         if cash_result.success?
           payment_paid!
