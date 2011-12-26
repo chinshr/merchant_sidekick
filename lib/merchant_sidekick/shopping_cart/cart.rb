@@ -68,9 +68,9 @@ module MerchantSidekick
       end
   
       def total_price
-        sum = Money.new(1, self.currency)
+        sum = ::Money.new(1, self.currency)
         @line_items.each {|i| sum += i.total_price }
-        sum -= Money.new(1, self.currency)
+        sum -= ::Money.new(1, self.currency)
         sum
       end
       alias_method :total, :total_price
@@ -95,11 +95,12 @@ module MerchantSidekick
       def cart_line_item(product, quantity=1, line_options={})
         raise "No price column available for '#{product.class.name}'" unless product.respond_to?(:price)
         # we need to set currency explicitly here for correct money conversion of the cart_line_item
-        returning MerchantSidekick::ShoppingCart::LineItem.new do |line_item| 
+        MerchantSidekick::ShoppingCart::LineItem.new do |line_item| 
           line_item.options = self.options.merge(line_options)
           line_item.currency = self.currency
           line_item.quantity = quantity
           line_item.product = product
+          line_item
         end
       end
 
