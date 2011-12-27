@@ -81,26 +81,21 @@ class MerchantSidekick::Addressable::Address
   alias_method_chain :to_s, :name
 end
 
-class Addressable < ActiveRecord::Base
-end
+class Addressable < ActiveRecord::Base; end
 
 class HasOneSingleAddressModel < Addressable
-  # acts_as_addressable :has_one => true
   has_address
 end
 
 class HasManySingleAddressModel < Addressable
-  # acts_as_addressable :has_many => true
   has_addresses
 end
 
 class HasOneMultipleAddressModel < Addressable
-  # acts_as_addressable :billing, :shipping, :has_one => true
   has_address :billing, :shipping
 end
 
 class HasManyMultipleAddressModel < Addressable
-  # acts_as_addressable :billing, :shipping, :has_many => true
   has_addresses :billing, :shipping
 end
 
@@ -155,7 +150,6 @@ class ProductWithCopy < Product
 end
 
 class User < ActiveRecord::Base
-  # acts_as_addressable :billing, :shipping
   has_address :billing, :shipping
 end
 
