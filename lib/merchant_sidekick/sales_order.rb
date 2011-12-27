@@ -50,9 +50,9 @@ module MerchantSidekick
         :gross_amount => self.gross_total,
         :buyer => self.buyer,
         :seller => self.seller,
-        :origin_address => self.origin_address ? self.origin_address.clone : nil,
-        :billing_address => self.billing_address ? self.billing_address.clone : nil,
-        :shipping_address => self.shipping_address ? self.shipping_address.clone : nil
+        :origin_address => self.origin_address ? self.origin_address.dup : nil,
+        :billing_address => self.billing_address ? self.billing_address.dup : nil,
+        :shipping_address => self.shipping_address ? self.shipping_address.dup : nil
       )
     
       # set new invoice's line items to invoice we just created
