@@ -20,7 +20,7 @@ describe MerchantSidekick::SalesOrder, "with valid account" do
 
   it "should return a payment" do
     transaction do
-      @order.cash(@account).should be_instance_of(MerchantSidekick::Payments::CreditCardPayment)
+      @order.cash(@account).should be_instance_of(MerchantSidekick::ActiveMerchant::CreditCardPayment)
     end
   end
   

@@ -1,6 +1,6 @@
 # This class handles all credit card payment transactions using ActiveMerchant.
 module MerchantSidekick
-  module Payments
+  module ActiveMerchant
     class CreditCardPayment < Payment
       cattr_accessor :gateway
       serialize :params
@@ -20,7 +20,7 @@ module MerchantSidekick
         def gateway
           if @@gateway
             # return ActiveMerchant gateway instance
-            return @@gateway if @@gateway.is_a? ActiveMerchant::Billing::Gateway
+            return @@gateway if @@gateway.is_a? ::ActiveMerchant::Billing::Gateway
             # or get the ActiveMerchant gateway instance through Merchant Sidekick's gateway
             # e.g. :authorize_net_gateway -> AuthorizeNetGateway.gateway
             @@gateway = @@gateway.to_s.classify.constantize.gateway
@@ -82,7 +82,7 @@ module MerchantSidekick
             result.message   = response.message
             result.params    = response.params
             result.test      = response.test?
-          rescue ActiveMerchant::ActiveMerchantError => e
+          rescue ::ActiveMerchant::ActiveMerchantError => e
             result.success   = false
             result.reference = nil
             result.message   = e.message

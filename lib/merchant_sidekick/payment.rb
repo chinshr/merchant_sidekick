@@ -20,10 +20,10 @@ module MerchantSidekick
     # E.g. 
     #
     #   Payment.class_for(ActiveMerchant::Billing::CreditCard.new(...))
-    #   #=>  MerchantSidekick::Payments::CreditCardPayment
+    #   #=>  MerchantSidekick::ActiveMerchant::CreditCardPayment
     
     def self.class_for(payment_object)
-      MerchantSidekick::Payments::CreditCardPayment
+      MerchantSidekick::ActiveMerchant::CreditCardPayment
     end
 
     def self.content_column_names

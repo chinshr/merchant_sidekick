@@ -1,6 +1,6 @@
 require File.expand_path("../spec_helper", __FILE__)
 
-describe MerchantSidekick::Payments::CreditCardPayment, "authorization" do
+describe MerchantSidekick::ActiveMerchant::CreditCardPayment, "authorization" do
   
   def setup
     @amount = Money.new(100, 'USD')
@@ -8,7 +8,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "authorization" do
   
   it "should succeed" do
     transaction do
-      auth = MerchantSidekick::Payments::CreditCardPayment.authorize(
+      auth = MerchantSidekick::ActiveMerchant::CreditCardPayment.authorize(
         @amount,
         credit_card(valid_credit_card_attributes)
       )
@@ -21,7 +21,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "authorization" do
   
   it "should fail" do
     transaction do
-      auth = MerchantSidekick::Payments::CreditCardPayment.authorize(
+      auth = MerchantSidekick::ActiveMerchant::CreditCardPayment.authorize(
         @amount,
         credit_card(invalid_credit_card_attributes)
       )
@@ -33,7 +33,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "authorization" do
   
   it "should error" do
     transaction do
-      auth = MerchantSidekick::Payments::CreditCardPayment.authorize(
+      auth = MerchantSidekick::ActiveMerchant::CreditCardPayment.authorize(
         @amount,
         credit_card(valid_credit_card_attributes(:number => '3'))
       )
@@ -45,7 +45,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "authorization" do
   
 end
 
-describe MerchantSidekick::Payments::CreditCardPayment, "capture" do
+describe MerchantSidekick::ActiveMerchant::CreditCardPayment, "capture" do
   
   def setup
     @amount = Money.new(100, 'USD')
@@ -53,7 +53,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "capture" do
   
   it "should capture successfully" do
     transaction do
-      capt = MerchantSidekick::Payments::CreditCardPayment.capture(
+      capt = MerchantSidekick::ActiveMerchant::CreditCardPayment.capture(
         @amount,
         '123'
       )
@@ -65,7 +65,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "capture" do
   
   it "should fail capture" do
     transaction do
-      capt = MerchantSidekick::Payments::CreditCardPayment.capture(
+      capt = MerchantSidekick::ActiveMerchant::CreditCardPayment.capture(
         @amount,
         '2'
       )
@@ -77,7 +77,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "capture" do
   
   it "should error capture" do
     transaction do
-      capt = MerchantSidekick::Payments::CreditCardPayment.capture(
+      capt = MerchantSidekick::ActiveMerchant::CreditCardPayment.capture(
         @amount,
         '1'
       )
@@ -89,7 +89,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "capture" do
   
 end
 
-describe MerchantSidekick::Payments::CreditCardPayment, "transfer method" do
+describe MerchantSidekick::ActiveMerchant::CreditCardPayment, "transfer method" do
   
   def setup
     @amount = Money.new(100, 'USD')
@@ -97,7 +97,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "transfer method" do
   
   it "should sucessfully transfer" do
     transaction do
-      capt = MerchantSidekick::Payments::CreditCardPayment.transfer(
+      capt = MerchantSidekick::ActiveMerchant::CreditCardPayment.transfer(
         @amount,
         'account@test.tst'
       )
@@ -109,7 +109,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "transfer method" do
 
   it "should return error" do
     transaction do
-      capt = MerchantSidekick::Payments::CreditCardPayment.transfer(
+      capt = MerchantSidekick::ActiveMerchant::CreditCardPayment.transfer(
         @amount,
         'error@error.tst'
       )
@@ -121,7 +121,7 @@ describe MerchantSidekick::Payments::CreditCardPayment, "transfer method" do
 
   it "should fail" do
     transaction do
-      capt = MerchantSidekick::Payments::CreditCardPayment.transfer(
+      capt = MerchantSidekick::ActiveMerchant::CreditCardPayment.transfer(
         @amount,
         'fail@error.tst'
       )

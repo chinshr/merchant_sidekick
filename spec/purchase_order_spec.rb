@@ -39,7 +39,7 @@ describe "authorize with a valid credit card" do
 
   it "should return a payment" do
     transaction do
-      @order.authorize(@credit_card).should be_instance_of(MerchantSidekick::Payments::CreditCardPayment)
+      @order.authorize(@credit_card).should be_instance_of(MerchantSidekick::ActiveMerchant::CreditCardPayment)
     end
   end
   
