@@ -8,12 +8,10 @@ module MerchantSidekick
     module ClassMethods
       def acts_as_seller(options={})
         include MerchantSidekick::Seller::InstanceMethods
-        class_eval do
-          has_many :orders, :as => :seller, :dependent => :destroy, :class_name => "::MerchantSidekick::Order"
-          has_many :invoices, :as => :seller, :dependent => :destroy, :class_name => "::MerchantSidekick::Invoice"
-          has_many :sales_orders, :as => :seller, :class_name => "::MerchantSidekick::SalesOrder"
-          has_many :sales_invoices, :as => :seller, :class_name => "::MerchantSidekick::SalesInvoice"
-        end
+        has_many :orders, :as => :seller, :dependent => :destroy, :class_name => "::MerchantSidekick::Order"
+        has_many :invoices, :as => :seller, :dependent => :destroy, :class_name => "::MerchantSidekick::Invoice"
+        has_many :sales_orders, :as => :seller, :class_name => "::MerchantSidekick::SalesOrder"
+        has_many :sales_invoices, :as => :seller, :class_name => "::MerchantSidekick::SalesInvoice"
       end
     end
     

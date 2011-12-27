@@ -8,12 +8,10 @@ module MerchantSidekick
     module ClassMethods
       def acts_as_buyer
         include MerchantSidekick::Buyer::InstanceMethods
-        class_eval do
-          has_many :orders, :as => :buyer, :dependent => :destroy, :class_name => "::MerchantSidekick::Order"
-          has_many :invoices, :as => :buyer, :dependent => :destroy, :class_name => "::MerchantSidekick::Invoice"
-          has_many :purchase_orders, :as => :buyer, :class_name => "::MerchantSidekick::PurchaseOrder"
-          has_many :purchase_invoices, :as => :buyer, :class_name => "::MerchantSidekick::PurchaseInvoice"
-        end
+        has_many :orders, :as => :buyer, :dependent => :destroy, :class_name => "::MerchantSidekick::Order"
+        has_many :invoices, :as => :buyer, :dependent => :destroy, :class_name => "::MerchantSidekick::Invoice"
+        has_many :purchase_orders, :as => :buyer, :class_name => "::MerchantSidekick::PurchaseOrder"
+        has_many :purchase_invoices, :as => :buyer, :class_name => "::MerchantSidekick::PurchaseInvoice"
       end
     end
     
