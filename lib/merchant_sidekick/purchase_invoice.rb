@@ -12,7 +12,7 @@ module MerchantSidekick
     # payment_object is the credit_card instance or other payment objects
     def authorize(payment_object, options={})
       transaction do
-        authorization = MerchantSidekick::Payments::Payment.class_for(payment_object).authorize(
+        authorization = MerchantSidekick::Payment.class_for(payment_object).authorize(
           gross_total,
           payment_object,
           payment_options(options)
@@ -137,7 +137,7 @@ module MerchantSidekick
     # Purchase invoice, combines authorization and capture in one step
     def purchase(payment_object, options={})
       transaction do
-        purchase_result = MerchantSidekick::Payments::Payment.class_for(payment_object).purchase(
+        purchase_result = MerchantSidekick::Payment.class_for(payment_object).purchase(
           gross_total,
           payment_object,
           payment_options(options)

@@ -40,7 +40,7 @@ describe MerchantSidekick::SalesInvoice do
         payment.should be_success
         payment.position.should == 1
         @invoice.current_state.should == :paid
-      }.should change(MerchantSidekick::Payments::Payment, :count).by(1)
+      }.should change(MerchantSidekick::Payment, :count).by(1)
     end
   end
   
@@ -51,7 +51,7 @@ describe MerchantSidekick::SalesInvoice do
         payment.should_not be_success
         payment.position.should == 1
         @invoice.current_state.should == :payment_declined
-      }.should change(MerchantSidekick::Payments::Payment, :count).by(1)
+      }.should change(MerchantSidekick::Payment, :count).by(1)
     end
   end
   

@@ -34,7 +34,7 @@ describe MerchantSidekick::PurchaseInvoice do
         payment.should be_success
         payment.position.should == 1
         @invoice.current_state.should == :authorized
-      }.should change(MerchantSidekick::Payments::Payment, :count).by(1)
+      }.should change(MerchantSidekick::Payment, :count).by(1)
     end
   end
 
@@ -45,7 +45,7 @@ describe MerchantSidekick::PurchaseInvoice do
       lambda { 
         capture_payment = @invoice.capture 
         capture_payment.should be_success
-      }.should change(MerchantSidekick::Payments::Payment, :count).by(1)
+      }.should change(MerchantSidekick::Payment, :count).by(1)
     end
   end
   
@@ -63,7 +63,7 @@ describe MerchantSidekick::PurchaseInvoice do
         payment = @invoice.purchase(@credit_card) 
         payment.should be_success
         @invoice.should be_paid
-      }.should change(MerchantSidekick::Payments::Payment, :count).by(1)
+      }.should change(MerchantSidekick::Payment, :count).by(1)
     end
   end
   

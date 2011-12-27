@@ -36,6 +36,6 @@ require 'merchant_sidekick/gateways/gateway'
 require 'merchant_sidekick/gateways/authorize_net_gateway'
 require 'merchant_sidekick/gateways/paypal_gateway'
 
-require 'merchant_sidekick/payments/payment'
+require 'merchant_sidekick/payment'
 require 'merchant_sidekick/payments/credit_card_payment'
 

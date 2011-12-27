@@ -13,7 +13,7 @@ module MerchantSidekick
     # cash invoice, combines authorization and capture in one step
     def cash(payment_object, options={})
       transaction do
-        cash_result = MerchantSidekick::Payments::Payment.class_for(payment_object).transfer(
+        cash_result = MerchantSidekick::Payment.class_for(payment_object).transfer(
           gross_total,
           payment_object,
           payment_options(options)

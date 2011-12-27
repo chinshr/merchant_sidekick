@@ -11,7 +11,7 @@ module MerchantSidekick
     belongs_to :buyer, :polymorphic => true
     has_many   :line_items, :class_name => "MerchantSidekick::LineItem"
     belongs_to :order, :class_name => "MerchantSidekick::Order"
-    has_many   :payments, :as => :payable, :dependent => :destroy, :class_name => "MerchantSidekick::Payments::Payment"
+    has_many   :payments, :as => :payable, :dependent => :destroy, :class_name => "MerchantSidekick::Payment"
   
     money :net_amount,   :cents => :net_cents,   :currency => :currency
     money :tax_amount,   :cents => :tax_cents,   :currency => :currency
