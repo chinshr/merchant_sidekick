@@ -1,6 +1,5 @@
 require File.expand_path("../spec_helper", __FILE__)
 
-=begin
 describe "authorize with an invalid credit card will not save the order" do
   
   def setup
@@ -25,7 +24,6 @@ describe "authorize with an invalid credit card will not save the order" do
   end
   
 end
-=end
 
 describe "authorize with a valid credit card" do
   
