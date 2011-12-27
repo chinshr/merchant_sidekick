@@ -16,8 +16,7 @@ module MerchantSidekick
     money :net_amount,   :cents => :net_cents,   :currency => :currency
     money :tax_amount,   :cents => :tax_cents,   :currency => :currency
     money :gross_amount, :cents => :gross_cents, :currency => :currency
-
-    acts_as_addressable :origin, :billing, :shipping, :has_one => true
+    has_address :origin, :billing, :shipping
     
     #--- state machine
     aasm_initial_state :pending

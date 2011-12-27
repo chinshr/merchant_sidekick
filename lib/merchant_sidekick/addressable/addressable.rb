@@ -5,170 +5,128 @@ module MerchantSidekick #:nodoc:
       base.extend ClassMethods  
     end
 
-    # acts_as_addressable was modified to change behavior in the 
-    # following ways:
-    #   * supports multiple types (kinds) of addresses
-    #   * associations for each kind
-    #   * allows additional funtionality
-    # Usage:
-    #   acts_as_addressable :personal, :business, :billing [, :has_many => true ]
-    #     adds methods to find_personal_address or find_or_build_personal_address
-    #     as well as associations <addressable>.personal_addresses
-    #   acts_as_addressable :mailing, :has_one => true
-    #     defines a has_one relationships with is called mailing
-    #   acts_as_addressable :personal, :business, :billing, :has_one => true
-    #     defines personal_address, etc.
+    # Addressable adds address associations in the following way: 
+    #
+    #   * supports multiple types of addresses, e.g. BusinessAddress
+    #   * associations for each type
+    #   * adds scopes, finders and other helpers
+    #
+    # E.g.
+    #
+    #   class User < ActiveRecord::base
+    #     has_addresses :personal, :business, :billing
+    #     ...
+    #     # => @user.personal_addresses
+    #     # => @user.find_personal_address
+    #     # => @user.find_or_build_personal_address
+    #   end
+    #
+    # or
+    # 
+    #   class User < ActiveRecord::base
+    #     has_address
+    #     ...
+    #     # => @user.address
+    #   end
+    #
+    #
+    #   class User < ActiveRecord::base
+    #     has_address :mailing
+    #     ...
+    #     # => @user.mailing_address
+    #     # => @user.find_mailing_address
+    #     # => @user.find_or_build_mailing_address
+    #   end
+    #
     module ClassMethods
-      def acts_as_addressable(*arguments)
-        attributes = []
-        options = {:has_one => true, :has_many => false}
-
-        # distinguish between options and attributes
+      
+      # Defines a single address or a single address per address type
+      def has_address(*arguments)
+        attributes, options = [], {:has_one => true, :has_many => false}
         arguments.each do |argument|
           case argument.class.name
           when 'Hash'
-            options = { :has_many => false, :has_one => false }.merge(argument)
+            options = options.merge(argument)
           else
-            case argument
-            when :has_many
-              options.merge!({ :has_many => true, :has_one => false })
-            when :has_one
-              options.merge!({ :has_one => true, :has_many => false })
-            else
-              attributes << argument
-            end
+            attributes << argument
           end
         end
 
-        if options[:has_one]
-          # acts_as_addressable :has_one => true
-          #
-          if attributes.empty?
-            has_one :address, :as => :addressable, :dependent => :destroy, 
-              :class_name => "MerchantSidekick::Addressable::Address"
-            
-            class_eval <<-THIS
-            
-              def build_address_with_addressable(options={})
-                build_address_without_addressable(options.merge(:addressable => self))
-              end
-              alias_method_chain :build_address, :addressable
-            
-              def address_attributes=(attributes)
-               self.address ? self.address.attributes = attributes : self.build_address(attributes)
-              end
-            
-            THIS
-          else
-            # acts_as_addressable :personal, :billing
-            attributes.each do |attribute|
-              # Address decendent
-              # Note: the <attribute>.pluralize.classify makes sure that classify works
-              #       for singular attribute, e.g. :business -> BusinessAddress, otherwise,
-              #       Rails default would inflect :business -> BusinesAddress
-              address_class = <<-ADDRESS
-                class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
-                  def self.kind
-                    '#{attribute}'.to_sym
-                  end
+        if attributes.empty?
+          has_one :address, :as => :addressable, :dependent => :destroy, 
+          :class_name => "MerchantSidekick::Addressable::Address"
 
-                  #{ attributes.collect {|a| "def self.#{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
+          class_eval <<-THIS
 
-                  def kind
-                    '#{attribute}'.to_sym
-                  end
-
-                  #{ attributes.collect {|a| "def #{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
-                end
-              ADDRESS
-              eval address_class, TOPLEVEL_BINDING
-              
-              has_one "#{attribute}_address".to_sym,
-                :class_name => "#{attribute.to_s.pluralize.classify}Address",
-                :as => :addressable,
-                :dependent => :destroy
-
-              class_eval <<-THIS
-              
-                def build_#{attribute}_address_with_addressable(options={})
-                  build_#{attribute}_address_without_addressable(options.merge(:addressable => self))
-                end
-                alias_method_chain :build_#{attribute}_address, :addressable
-              
-                def find_#{attribute}_address(options={})
-                  find_address(:#{attribute}, options)
-                end
-              
-                def find_default_#{attribute}_address
-                  find_default_address(:#{attribute})
-                end
-                alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
-
-                def find_or_build_#{attribute}_address(options={})
-                  find_or_build_address(:#{attribute}, options)
-                end
-              
-                def find_#{attribute}_address_or_clone_from(from_address, options={})
-                  find_or_clone_address(:#{attribute}, from_address, options)
-                end
-                
-                def #{attribute}_address_attributes=(attributes)
-                 self.#{attribute}_address ? self.#{attribute}_address.attributes = attributes : self.build_#{attribute}_address(attributes)
-                end
-              THIS
-            end
+          def build_address_with_addressable(options={})
+            build_address_without_addressable(options.merge(:addressable => self))
           end
-        elsif options[:has_many]
-          # acts_as_addressable :billing, :shipping, :has_many => true
-          #
-          has_many :addresses, :as => :addressable, :dependent => :destroy,
-            :class_name => "MerchantSidekick::Addressable::Address"
-            
+          alias_method_chain :build_address, :addressable
+
+          def address_attributes=(attributes)
+            self.address ? self.address.attributes = attributes : self.build_address(attributes)
+          end
+
+          THIS
+        else
           attributes.each do |attribute|
+            # Address decendent
+            # Note: the <attribute>.pluralize.classify makes sure that classify works
+            #       for singular attribute, e.g. :business -> BusinessAddress, otherwise,
+            #       Rails default would inflect :business -> BusinesAddress
             address_class = <<-ADDRESS
-              class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
-                def self.kind
-                  '#{attribute}'.to_sym
-                end
-
-                #{ attributes.collect {|a| "def self.#{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
-
-                def kind
-                  '#{attribute}'.to_sym
-                end
-
-                #{ attributes.collect {|a| "def #{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
+            class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
+              def self.kind
+                '#{attribute}'.to_sym
               end
+
+              #{ attributes.collect {|a| "def self.#{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
+
+              def kind
+                '#{attribute}'.to_sym
+              end
+
+              #{ attributes.collect {|a| "def #{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
+            end
             ADDRESS
             eval address_class, TOPLEVEL_BINDING
-            
-            has_many "#{attribute.to_s.classify}Address".pluralize.underscore.to_sym,
-              :class_name => "#{attribute.to_s.pluralize.classify}Address",
-              :as => :addressable,
-              :dependent => :destroy
+
+            has_one "#{attribute}_address".to_sym,
+            :class_name => "#{attribute.to_s.pluralize.classify}Address",
+            :as => :addressable,
+            :dependent => :destroy
 
             class_eval <<-THIS
-              def find_#{attribute}_addresses(options={})
-                find_addresses(:all, :#{attribute}, options)
-              end
 
-              def find_default_#{attribute}_address
-                find_default_address(:#{attribute})
-              end
-              alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
-            
-              def find_or_build_#{attribute}_address(options={})
-                find_or_build_address(:#{attribute}, options)
-              end
-            
-              def find_#{attribute}_address_or_clone_from(from_address, options={})
-                find_or_clone_address(:#{attribute}, from_address, options)
-              end
+            def build_#{attribute}_address_with_addressable(options={})
+              build_#{attribute}_address_without_addressable(options.merge(:addressable => self))
+            end
+            alias_method_chain :build_#{attribute}_address, :addressable
+
+            def find_#{attribute}_address(options={})
+              find_address(:#{attribute}, options)
+            end
+
+            def find_default_#{attribute}_address
+              find_default_address(:#{attribute})
+            end
+            alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
+
+            def find_or_build_#{attribute}_address(options={})
+              find_or_build_address(:#{attribute}, options)
+            end
+
+            def find_#{attribute}_address_or_clone_from(from_address, options={})
+              find_or_clone_address(:#{attribute}, from_address, options)
+            end
+
+            def #{attribute}_address_attributes=(attributes)
+              self.#{attribute}_address ? self.#{attribute}_address.attributes = attributes : self.build_#{attribute}_address(attributes)
+            end
             THIS
           end
         end
 
-        # write options
         write_inheritable_attribute(:acts_as_addressable_options, {
           :association_type => options[:has_one] ? :has_one : :has_many,
           :attributes => attributes
@@ -178,8 +136,78 @@ module MerchantSidekick #:nodoc:
         include MerchantSidekick::Addressable::InstanceMethods
         extend MerchantSidekick::Addressable::SingletonMethods
       end
+      
+      # Defines a single address or a single address per address type
+      def has_addresses(*arguments)
+        attributes, options = [], {:has_one => false, :has_many => true}
+        arguments.each do |argument|
+          case argument.class.name
+          when 'Hash'
+            options = defaults.merge(argument)
+          else
+            attributes << argument
+          end
+        end
+
+        has_many :addresses, :as => :addressable, :dependent => :destroy,
+        :class_name => "MerchantSidekick::Addressable::Address"
+
+        attributes.each do |attribute|
+          address_class = <<-ADDRESS
+          class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
+            def self.kind
+              '#{attribute}'.to_sym
+            end
+
+            #{ attributes.collect {|a| "def self.#{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
+
+            def kind
+              '#{attribute}'.to_sym
+            end
+
+            #{ attributes.collect {|a| "def #{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
+          end
+          ADDRESS
+          eval address_class, TOPLEVEL_BINDING
+
+          has_many "#{attribute.to_s.classify}Address".pluralize.underscore.to_sym,
+          :class_name => "#{attribute.to_s.pluralize.classify}Address",
+          :as => :addressable,
+          :dependent => :destroy
+
+          class_eval <<-THIS
+          def find_#{attribute}_addresses(options={})
+            find_addresses(:all, :#{attribute}, options)
+          end
+
+          def find_default_#{attribute}_address
+            find_default_address(:#{attribute})
+          end
+          alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
+
+          def find_or_build_#{attribute}_address(options={})
+            find_or_build_address(:#{attribute}, options)
+          end
+
+          def find_#{attribute}_address_or_clone_from(from_address, options={})
+            find_or_clone_address(:#{attribute}, from_address, options)
+          end
+          THIS
+        end
+
+        # write options
+        write_inheritable_attribute(:acts_as_addressable_options, {
+          :association_type => options[:has_one] ? :has_one : :has_many,
+          :attributes => attributes
+          })
+        class_inheritable_reader :acts_as_addressable_options
+
+        include MerchantSidekick::Addressable::InstanceMethods
+        extend MerchantSidekick::Addressable::SingletonMethods
+      end
+      
     end
-  
+
     # This module contains class methods
     module SingletonMethods
 
@@ -189,13 +217,13 @@ module MerchantSidekick #:nodoc:
       def find_all_addresses_for(obj)
         addressable = ActiveRecord::Base.send(:class_name_of_active_record_descendant, self).to_s
         Address.find(
-          :all,
-          :conditions => ["addressable_id = ? AND addressable_type = ?", obj.id, addressable]
+        :all,
+        :conditions => ["addressable_id = ? AND addressable_type = ?", obj.id, addressable]
         )
       end
 
     end
-  
+
     # This module contains instance methods
     module InstanceMethods
 
@@ -203,12 +231,12 @@ module MerchantSidekick #:nodoc:
       def find_addresses(selector, kind, options = {})
         defaults = {:order => "created_at DESC"}
         options = defaults.merge(options).symbolize_keys
-        
+
         if :has_one == acts_as_addressable_options[:association_type]
           conditions = options[:conditions] || ''
           scoped = Address.scoped
           scoped = scoped.where("addressable_id = ? AND addressable_type = ? AND type LIKE ?",
-            self.id, self.class.base_class.name, "#{kind.to_s.pluralize.classify}Address")
+          self.id, self.class.base_class.name, "#{kind.to_s.pluralize.classify}Address")
           scoped = scoped.where(conditions) unless conditions.blank?
           options.merge!(:conditions => conditions)
           scoped.send(selector)
@@ -243,7 +271,7 @@ module MerchantSidekick #:nodoc:
           end
         end
       end
-      
+
       # Find address of kind 'type' or instantiate a new address to relationship.
       # Optionally, submit attributes to instantiate the address with.
       # Examples:
@@ -309,8 +337,8 @@ module MerchantSidekick #:nodoc:
         to_address
       end
 
-    private
-    
+      private
+
       def auto_kind
         if :has_one==acts_as_addressable_options[:association_type]
           if acts_as_addressable_options[:attributes].empty?
@@ -324,6 +352,6 @@ module MerchantSidekick #:nodoc:
       end
 
     end
-  
+
   end
 end
