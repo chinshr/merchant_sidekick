@@ -4,7 +4,6 @@ require "active_record"
 require "active_support"
 require "sqlite3"
 require "merchant_sidekick"
-require "ruby-debug"
 
 RSpec.configure do |config|
 #  config.use_transactional_fixtures = true
