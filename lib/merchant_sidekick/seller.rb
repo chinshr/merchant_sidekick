@@ -6,6 +6,18 @@ module MerchantSidekick
     end
 
     module ClassMethods
+
+      # Defines helper methods for a person selling items.
+      #
+      # E.g.
+      #
+      #   class Merchant
+      #     acts_as_seller
+      #     ...
+      #   end
+      #
+      #   # => @merchant.sell_to @buyer, @products
+      #
       def acts_as_seller(options={})
         include MerchantSidekick::Seller::InstanceMethods
         has_many :orders, :as => :seller, :dependent => :destroy, :class_name => "::MerchantSidekick::Order"

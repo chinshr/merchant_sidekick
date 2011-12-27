@@ -6,6 +6,19 @@ module MerchantSidekick
     end
 
     module ClassMethods
+
+      # Defines helper methods for a person buying items.
+      #
+      # E.g.
+      #
+      #   class Client < ActiveRecord::Base
+      #     acts_as_buyer
+      #     ...
+      #   end
+      #
+      #   # => @client.purchase @products
+      #   # => @client.purchase_from @merchant, @products
+      #
       def acts_as_buyer
         include MerchantSidekick::Buyer::InstanceMethods
         has_many :orders, :as => :buyer, :dependent => :destroy, :class_name => "::MerchantSidekick::Order"

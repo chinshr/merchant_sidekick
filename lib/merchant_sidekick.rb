@@ -13,9 +13,9 @@ require 'merchant_sidekick/addressable/addressable'
 require 'merchant_sidekick/addressable/address'
 ActiveRecord::Base.send(:include, MerchantSidekick::Addressable)
 
-require 'merchant_sidekick/acts_as_sellable'
-require 'merchant_sidekick/acts_as_buyer'
-require 'merchant_sidekick/acts_as_seller'
+require 'merchant_sidekick/sellable'
+require 'merchant_sidekick/buyer'
+require 'merchant_sidekick/seller'
 
 require 'merchant_sidekick/line_item'
 require 'merchant_sidekick/order'

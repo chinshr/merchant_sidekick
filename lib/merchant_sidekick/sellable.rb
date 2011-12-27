@@ -6,20 +6,15 @@ module MerchantSidekick
 
     module ClassMethods
       
-      # Declares a model as sellable
+      # Declares a model as sellable.
       #
-      # A sellable model must have a field that stores the price in cents.
-      #
-      # === Options:
-      # * <tt>:cents</tt>: name of cents field (default :cents).
-      # * <tt>:currency</tt>: name of currency field (default :currency). Set to <tt>false</tt>
-      #   diable storing the currency, causing it to default to USD
-      #
-      # === Example:
+      # E.g.
       #
       #   class Product < ActiveRecord::Base
       #     acts_as_sellable :cents => :price_in_cents, :currency => false
       #   end
+      #
+      #   @product.orders.
       #
       def acts_as_sellable(options = {})
         include MerchantSidekick::Sellable::InstanceMethods
