@@ -67,10 +67,12 @@ describe MerchantSidekick::PurchaseInvoice do
     end
   end
   
+=begin
   it "should void an authorized payment"
     # bogus gateway does not void, refactor into remote
   
   it "should refund with credit payment"
     # bogus gateway does not void, refactor into remote
+=end
   
 end
