@@ -22,12 +22,9 @@ Gem::Specification.new do |s|
   s.add_dependency "aasm"
   s.add_dependency "activemerchant"
 
-  #s.add_development_dependency "rspec", "~> 2.7.0"
   s.add_development_dependency "rspec", "~> 2.7.0"
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "rake"
-  # TODO load depending which ruby is present
-  s.add_development_dependency "ruby-debug19"
 
   s.description = <<-EOM
 EOM
