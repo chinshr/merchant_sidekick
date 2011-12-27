@@ -54,7 +54,7 @@ module MerchantSidekick #:nodoc:
 
         if attributes.empty?
           has_one :address, :as => :addressable, :dependent => :destroy, 
-          :class_name => "MerchantSidekick::Addressable::Address"
+            :class_name => "MerchantSidekick::Addressable::Address"
 
           class_eval <<-THIS
 
