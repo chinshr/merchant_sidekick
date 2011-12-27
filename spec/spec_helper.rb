@@ -174,7 +174,7 @@ end
 
 def valid_credit_card_attributes(attributes = {})
   {
-    :number             => "1",
+    :number             => "1", #"4242424242424242",
     :first_name         => "Claudio",
     :last_name          => "Almende",
     :month              => "8",
@@ -186,8 +186,8 @@ end
 
 def invalid_credit_card_attributes(attributes = {})
   {
-    :first_name => "first",
-    :last_name  => "last",
+    :first_name => "Bad",
+    :last_name  => "Boy",
     :month      => "8",
     :year       => Time.now.year + 1,
     :number     => "2",
@@ -242,6 +242,6 @@ module ActiveMerchant
   end
 end
 
+ActiveMerchant::Billing::Base.mode = :test
 MerchantSidekick::Gateways::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new
-# ActiveMerchant::Billing::CreditCard.require_verification_value = true
-# MerchantSidekick::LineItem.tax_rate_class_name = "TaxRate"
+ActiveMerchant::Billing::CreditCard.require_verification_value = true

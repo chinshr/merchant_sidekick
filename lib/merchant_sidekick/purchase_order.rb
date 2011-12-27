@@ -7,14 +7,12 @@ module MerchantSidekick
     def authorize(payment_object, options={})
       defaults = {:order_id => number}
       options = defaults.merge(options).symbolize_keys
-    
       transaction do 
         buyer.send(:before_authorize_payment, self) if buyer && buyer.respond_to?(:before_authorize_payment)
         self.build_addresses
         self.build_invoice unless self.last_unsaved_invoice
         authorization_result = self.last_unsaved_invoice.authorize(payment_object, options)
         if authorization_result.success?
-          debugger
           process_payment!
         end
         buyer.send(:after_authorize_payment, self) if buyer && buyer.respond_to?(:after_authorize_payment)
@@ -237,17 +235,17 @@ module MerchantSidekick
       end
     end
 
-    def build_invoice #:nodoc:
+    def build_invoice
       new_invoice = self.purchase_invoices.build( 
-        :line_items => self.duplicate_line_items,
-        :net_amount => self.net_total,
-        :tax_amount => self.tax_total,
-        :gross_amount => self.gross_total,
-        :buyer => self.buyer,
-        :seller => self.seller,
-        :origin_address => self.origin_address ? self.origin_address.clone : nil,
-        :billing_address => self.billing_address ? self.billing_address.clone : nil,
-        :shipping_address => self.shipping_address ? self.shipping_address.clone : nil
+        :line_items       => self.duplicate_line_items,
+        :net_amount       => self.net_total,
+        :tax_amount       => self.tax_total,
+        :gross_amount     => self.gross_total,
+        :buyer            => self.buyer,
+        :seller           => self.seller,
+        :origin_address   => self.origin_address ? self.origin_address.dup : nil,
+        :billing_address  => self.billing_address ? self.billing_address.dup : nil,
+        :shipping_address => self.shipping_address ? self.shipping_address.dup : nil
       )
 
       # set new invoice's line items to invoice we just created
@@ -259,13 +257,10 @@ module MerchantSidekick
         end
       end
     
-      # copy addresses
+      # duplicate addresses
       new_invoice.build_origin_address(self.origin_address.content_attributes) if self.origin_address
       new_invoice.build_billing_address(self.billing_address.content_attributes) if self.billing_address
       new_invoice.build_shipping_address(self.shipping_address.content_attributes) if self.shipping_address
-
-      new_invoice.billing_address.street = "#{Merchant::Sidekick::Version::NAME}" if new_invoice.billing_address && new_invoice.billing_address.street.to_s =~ /^backend$/
-      new_invoice.shipping_address.street = "#{Merchant::Sidekick::Version::NAME}" if new_invoice.shipping_address && new_invoice.shipping_address.street.to_s =~ /^backend$/
 
       new_invoice.evaluate
       @additional_line_items = nil
@@ -278,9 +273,7 @@ module MerchantSidekick
       lis = self.line_items
       lis += @additional_line_items.to_a
       lis.each do |line_item|
-        # ca = line_item.attributes.symbolize_keys
-        # ca.delete(:order_id)
-        li = line_item.clone
+        li = line_item.dup # Note: use clone in Rails < 3.1
         li.sellable = line_item.sellable
         li.net_amount = line_item.net_amount
         li.gross_amount = line_item.gross_amount

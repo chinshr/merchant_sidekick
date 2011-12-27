@@ -10,8 +10,7 @@ class CreateMerchantSidekickBillingTables < ActiveRecord::Migration
       t.integer "tax_cents",     :default   => 0, :null => false
       t.integer "gross_cents",   :default   => 0, :null => false
       t.string  "currency",      :default   => "USD", :null => false
-#      t.decimal "tax_rate",      :precision => 15, :scale => 10, :default => 0.0, :null => false 
-      t.float "tax_rate",      :default => 0.0, :null => false 
+      t.decimal "tax_rate",      :precision => 15, :scale => 10, :default => 0.0, :null => false 
       t.timestamps
     end
     add_index :line_items, "order_id"
