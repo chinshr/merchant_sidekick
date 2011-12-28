@@ -53,11 +53,10 @@ module MerchantSidekick #:nodoc:
         end
 
         if attributes.empty?
-          has_one :address, :as => :addressable, :dependent => :destroy, 
+          has_one :address, :as => :addressable, :dependent => :destroy,
             :class_name => "MerchantSidekick::Addressable::Address"
 
-          class_eval <<-THIS
-
+          class_eval(<<-END, __FILE__, __LINE__+1)
             def build_address_with_addressable(attributes={}, options={})
               build_address_without_addressable(attributes.merge(:addressable => self), options)
             end
@@ -66,8 +65,7 @@ module MerchantSidekick #:nodoc:
             def address_attributes=(attributes)
               self.address ? self.address.attributes = attributes : self.build_address(attributes)
             end
-
-          THIS
+          END
         else
           attributes.each do |attribute|
             # Address decendent
@@ -96,34 +94,33 @@ module MerchantSidekick #:nodoc:
             :as => :addressable,
             :dependent => :destroy
 
-            class_eval <<-THIS
+            class_eval(<<-END, __FILE__, __LINE__+1)
+              def build_#{attribute}_address_with_addressable(options={})
+                build_#{attribute}_address_without_addressable(options.merge(:addressable => self))
+              end
+              alias_method_chain :build_#{attribute}_address, :addressable
 
-            def build_#{attribute}_address_with_addressable(options={})
-              build_#{attribute}_address_without_addressable(options.merge(:addressable => self))
-            end
-            alias_method_chain :build_#{attribute}_address, :addressable
+              def find_#{attribute}_address(options={})
+                find_address(:#{attribute}, options)
+              end
 
-            def find_#{attribute}_address(options={})
-              find_address(:#{attribute}, options)
-            end
+              def find_default_#{attribute}_address
+                find_default_address(:#{attribute})
+              end
+              alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
 
-            def find_default_#{attribute}_address
-              find_default_address(:#{attribute})
-            end
-            alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
+              def find_or_build_#{attribute}_address(options={})
+                find_or_build_address(:#{attribute}, options)
+              end
 
-            def find_or_build_#{attribute}_address(options={})
-              find_or_build_address(:#{attribute}, options)
-            end
+              def find_#{attribute}_address_or_clone_from(from_address, options={})
+                find_or_clone_address(:#{attribute}, from_address, options)
+              end
 
-            def find_#{attribute}_address_or_clone_from(from_address, options={})
-              find_or_clone_address(:#{attribute}, from_address, options)
-            end
-
-            def #{attribute}_address_attributes=(attributes)
-              self.#{attribute}_address ? self.#{attribute}_address.attributes = attributes : self.build_#{attribute}_address(attributes)
-            end
-            THIS
+              def #{attribute}_address_attributes=(attributes)
+                self.#{attribute}_address ? self.#{attribute}_address.attributes = attributes : self.build_#{attribute}_address(attributes)
+              end
+            END
           end
         end
 
@@ -154,19 +151,19 @@ module MerchantSidekick #:nodoc:
 
         attributes.each do |attribute|
           address_class = <<-ADDRESS
-          class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
-            def self.kind
-              '#{attribute}'.to_sym
+            class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
+              def self.kind
+                '#{attribute}'.to_sym
+              end
+
+              #{ attributes.collect {|a| "def self.#{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
+
+              def kind
+                '#{attribute}'.to_sym
+              end
+
+              #{ attributes.collect {|a| "def #{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
             end
-
-            #{ attributes.collect {|a| "def self.#{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
-
-            def kind
-              '#{attribute}'.to_sym
-            end
-
-            #{ attributes.collect {|a| "def #{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
-          end
           ADDRESS
           eval address_class, TOPLEVEL_BINDING
 
@@ -175,24 +172,24 @@ module MerchantSidekick #:nodoc:
           :as => :addressable,
           :dependent => :destroy
 
-          class_eval <<-THIS
-          def find_#{attribute}_addresses(options={})
-            find_addresses(:all, :#{attribute}, options)
-          end
+          class_eval(<<-END, __FILE__, __LINE__+1)
+            def find_#{attribute}_addresses(options={})
+              find_addresses(:all, :#{attribute}, options)
+            end
 
-          def find_default_#{attribute}_address
-            find_default_address(:#{attribute})
-          end
-          alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
+            def find_default_#{attribute}_address
+              find_default_address(:#{attribute})
+            end
+            alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
 
-          def find_or_build_#{attribute}_address(options={})
-            find_or_build_address(:#{attribute}, options)
-          end
+            def find_or_build_#{attribute}_address(options={})
+              find_or_build_address(:#{attribute}, options)
+            end
 
-          def find_#{attribute}_address_or_clone_from(from_address, options={})
-            find_or_clone_address(:#{attribute}, from_address, options)
-          end
-          THIS
+            def find_#{attribute}_address_or_clone_from(from_address, options={})
+              find_or_clone_address(:#{attribute}, from_address, options)
+            end
+          END
         end
 
         # write options

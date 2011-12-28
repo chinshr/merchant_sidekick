@@ -12,7 +12,7 @@ module MerchantSidekick
         :converter => Proc.new {|value| value.respond_to?(:to_money) ? value.to_money : raise(ArgumentError, "Can't convert #{value.class} to Money")}
       
       if options[:currency]
-        class_eval <<-RUBY
+        class_eval(<<-END, __FILE__, __LINE__+1)
           def currency
             ::Money::Currency.wrap(self[:#{options[:currency]}])
           end
@@ -20,9 +20,9 @@ module MerchantSidekick
           def currency_as_string
             self[:#{options[:currency]}]
           end
-        RUBY
+        END
       else
-        class_eval <<-RUBY
+        class_eval(<<-END, __FILE__, __LINE__+1)
           def currency
             ::Money.default_currency
           end
@@ -30,7 +30,7 @@ module MerchantSidekick
           def currency_as_string
             ::Money.default_currency.to_s
           end
-        RUBY
+        END
       end
       
     end
