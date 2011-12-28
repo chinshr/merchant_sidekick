@@ -31,19 +31,19 @@ module MerchantSidekick
 
         def authorize(amount, credit_card, options = {})
           process('authorization', amount) do |gw|
-            gw.authorize(amount, credit_card, options)
+            gw.authorize(amount.cents, credit_card, options)
           end
         end
 
         def capture(amount, authorization, options = {})
           process('capture', amount) do |gw|
-            gw.capture(amount, authorization, options)
+            gw.capture(amount.cents, authorization, options)
           end
         end
 
         def purchase(amount, credit_card, options = {})
           process('purchase', amount) do |gw|
-            gw.purchase(amount, credit_card, options)
+            gw.purchase(amount.cents, credit_card, options)
           end
         end
 
@@ -56,14 +56,14 @@ module MerchantSidekick
         # requires :card_number option
         def credit(amount, authorization, options = {})
           process('credit', amount) do |gw|
-            gw.credit(amount, authorization, options)
+            gw.credit(amount.cents, authorization, options)
           end
         end
 
         # works with paypal payflow
         def transfer(amount, destination_account, options={})
           process('transfer', amount) do |gw|
-            gw.transfer(amount, destination_account, options)
+            gw.transfer(amount.cents, destination_account, options)
           end
         end
 
