@@ -58,14 +58,14 @@ module MerchantSidekick #:nodoc:
 
           class_eval <<-THIS
 
-          def build_address_with_addressable(options={})
-            build_address_without_addressable(options.merge(:addressable => self))
-          end
-          alias_method_chain :build_address, :addressable
+            def build_address_with_addressable(attributes={}, options={})
+              build_address_without_addressable(attributes.merge(:addressable => self), options)
+            end
+            alias_method_chain :build_address, :addressable
 
-          def address_attributes=(attributes)
-            self.address ? self.address.attributes = attributes : self.build_address(attributes)
-          end
+            def address_attributes=(attributes)
+              self.address ? self.address.attributes = attributes : self.build_address(attributes)
+            end
 
           THIS
         else
