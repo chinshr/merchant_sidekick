@@ -10,7 +10,7 @@ class CreateMerchantSidekickBillingTables < ActiveRecord::Migration
       t.integer "tax_cents",     :default   => 0, :null => false
       t.integer "gross_cents",   :default   => 0, :null => false
       t.string  "currency",      :default   => "USD", :null => false
-      t.decimal "tax_rate",      :precision => 15, :scale => 10, :default => 0.0, :null => false 
+      t.decimal "tax_rate",      :precision => 15, :scale => 10, :default => 0.0, :null => false
       t.timestamps
     end
     add_index :line_items, "order_id"
@@ -88,8 +88,8 @@ class CreateMerchantSidekickBillingTables < ActiveRecord::Migration
     add_index :payments, "position"
     add_index :payments, "reference"
     add_index :payments, "uuid"
-    
-    
+
+
     #--- gateways
     create_table :gateways do |t|
       t.string "name",            :null => false
@@ -101,7 +101,7 @@ class CreateMerchantSidekickBillingTables < ActiveRecord::Migration
     end
     add_index :gateways, "name"
     add_index :gateways, "type"
-    
+
   end
 
   def self.down

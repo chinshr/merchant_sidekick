@@ -27,15 +27,15 @@ module MerchantSidekick
         has_many :purchase_invoices, :as => :buyer, :class_name => "::MerchantSidekick::PurchaseInvoice"
       end
     end
-    
+
     module InstanceMethods
-      
-      # like purchase but forces the seller parameter, instead of 
+
+      # like purchase but forces the seller parameter, instead of
       # taking it as a :seller option
       def purchase_from(seller, *arguments)
         purchase(arguments, :seller => seller)
       end
-      
+
       # purchase creates a purchase order based on
       # the given sellables, e.g. product, or basically
       # anything that has a price attribute.
@@ -60,7 +60,7 @@ module MerchantSidekick
         end
         raise ArgumentError.new("No sellable (e.g. product) model provided") if sellables.empty?
         raise ArgumentError.new("Sellable models must have a :price") unless sellables.all? {|sellable| sellable.respond_to? :price}
-        
+
         self.purchase_orders.build do |po|
           po.buyer = self
           po.seller = options[:seller]
@@ -77,14 +77,14 @@ module MerchantSidekick
           self
         end
       end
-      
+
       protected
-      
+
       # override in model, e.g. :seller => @person
       def default_purchase_options
         {}
       end
-      
+
     end
   end
 end

@@ -7,12 +7,12 @@ describe HasOneSingleAddressModel, "new" do
     @addressable = HasOneSingleAddressModel.new
     @address = @addressable.build_address valid_address_attributes
   end
-  
+
   it "should have an addressable for address" do
     @address.addressable.should_not be_nil
     @address.addressable.should == @addressable
   end
-  
+
 end
 
 describe HasOneSingleAddressModel, "create" do
@@ -22,7 +22,7 @@ describe HasOneSingleAddressModel, "create" do
     @addressable = HasOneSingleAddressModel.create
     @address = @addressable.create_address valid_address_attributes
   end
-  
+
   it "should have a single address" do
     @addressable.address.should_not be_nil
     @addressable.address.to_s.should == "George Bush, 100 Washington St., Santa Cruz, California, 95065, United States of America"
@@ -103,7 +103,7 @@ describe HasOneMultipleAddressModel do
     customer = HasOneMultipleAddressModel.create
     address = customer.build_shipping_address valid_address_attributes
     customer.shipping_address.should == address
-    customer.shipping_address.addressable.should == customer 
+    customer.shipping_address.addressable.should == customer
   end
 
   it "should create_shipping_address" do
@@ -111,7 +111,7 @@ describe HasOneMultipleAddressModel do
     lambda {
       address = addressable.create_shipping_address valid_address_attributes
       addressable.shipping_address.should == address
-      addressable.shipping_address.addressable.should == addressable 
+      addressable.shipping_address.addressable.should == addressable
     }.should change(MerchantSidekick::Addressable::Address, :count)
   end
 
@@ -180,7 +180,7 @@ describe HasOneMultipleAddressModel do
     address.should be_instance_of(BillingAddress)
     address.should == @billing_address
     address.street.should == @billing_address.street
-    
+
     # destroy billing address
     lambda {
       @addressable.billing_address.destroy
@@ -203,7 +203,7 @@ describe HasOneMultipleAddressModel do
     # destroy billing address
     @addressable.billing_address.destroy
     @addressable.reload
-    
+
     # clone from attributes
     shipping_address = ShippingAddress.new valid_address_attributes(
       :first_name => "Yet Another Shipping Address"
@@ -216,7 +216,7 @@ describe HasOneMultipleAddressModel do
       @addressable.save
     }.should change(MerchantSidekick::Addressable::Address, :count)
   end
-  
+
 end
 
 describe HasManyMultipleAddressModel do
@@ -227,7 +227,7 @@ describe HasManyMultipleAddressModel do
     @billing_address = @addressable.billing_addresses.create valid_address_attributes(:first_name => "Bill")
     @shipping_address = @addressable.shipping_addresses.create valid_address_attributes(:first_name => "Ship")
   end
-  
+
   it "should have at least one valid billing addresses" do
     @addressable.billing_addresses.should_not be_empty
     @addressable.addresses.size.should == 2
@@ -236,7 +236,7 @@ describe HasManyMultipleAddressModel do
     @addressable.billing_addresses.first.should_not be_shipping
     @addressable.billing_addresses.first.to_s.should == "Bill Bush, 100 Washington St., Santa Cruz, California, 95065, United States of America"
   end
-  
+
   it "should have at least one valid shipping addresses" do
     @addressable.shipping_addresses.should_not be_empty
     @addressable.addresses.size.should == 2

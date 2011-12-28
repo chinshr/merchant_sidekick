@@ -7,8 +7,8 @@ module MerchantSidekick
       cattr_accessor :authorize_net_transaction_key
 
       #--- class methods
-      class << self 
-    
+      class << self
+
         def config_file_name
           "authorize_net.yml"
         end
@@ -25,7 +25,7 @@ module MerchantSidekick
           end
           result
         end
-  
+
         # returns a gateway instance unless there is one assigned globally from the
         # environment files
         def gateway(file_name=nil)
@@ -38,7 +38,7 @@ module MerchantSidekick
           end
           @@gateway
         end
-  
+
       end
 
     end

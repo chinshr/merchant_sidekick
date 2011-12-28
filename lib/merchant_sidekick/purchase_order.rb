@@ -7,7 +7,7 @@ module MerchantSidekick
     def authorize(payment_object, options={})
       defaults = {:order_id => number}
       options = defaults.merge(options).symbolize_keys
-      transaction do 
+      transaction do
         buyer.send(:before_authorize_payment, self) if buyer && buyer.respond_to?(:before_authorize_payment)
         self.build_addresses
         self.build_invoice unless self.last_unsaved_invoice
@@ -21,11 +21,11 @@ module MerchantSidekick
     end
 
     # Captures the amount of the order that was previously authorized
-    # If the capture amount 
+    # If the capture amount
     def capture(options={})
       defaults = {:order_id => number}
       options = defaults.merge(options).symbolize_keys
-    
+
       if invoice = self.purchase_invoices.find(:all, :created_at => "invoices.id ASC").last
         buyer.send(:before_capture_payment, self) if buyer && buyer.respond_to?(:before_capture_payment)
         capture_result = invoice.capture(options)
@@ -36,7 +36,7 @@ module MerchantSidekick
         capture_result
       end
     end
-  
+
     # Pay the order and generate invoice
     def pay(payment_object, options={})
       defaults = { :order_id => number }
@@ -44,10 +44,10 @@ module MerchantSidekick
 
       # before_payment
       buyer.send( :before_payment, self ) if buyer && buyer.respond_to?( :before_payment )
-    
+
       self.build_addresses
       self.build_invoice unless self.last_unsaved_invoice
-    
+
       payment = self.last_unsaved_invoice.purchase(payment_object, options)
       if payment.success?
         process_payment!
@@ -70,9 +70,9 @@ module MerchantSidekick
       if invoice = self.purchase_invoices.find(:all, :created_at => "invoices.id ASC").last
         # before_payment
         buyer.send( :before_void_payment, self ) if buyer && buyer.respond_to?( :before_void_payment )
-    
+
         voided_result = invoice.void(options)
-      
+
         if voided_result.success?
           cancel!
         end
@@ -92,7 +92,7 @@ module MerchantSidekick
       if (invoice = self.purchase_invoices.find(:all, :created_at => "invoices.id ASC").last) && invoice.paid?
         # before_payment
         buyer.send(:before_refund_payment, self) if buyer && buyer.respond_to?(:before_refund_payment)
-    
+
         refunded_result = invoice.credit(options)
         if refunded_result.success?
           refund!
@@ -103,18 +103,18 @@ module MerchantSidekick
         refunded_result
       end
     end
-  
+
     # E.g.
-    # 
-    #   @order.recurring(@payment, :interval => {:length => 1, :unit => :month}, 
+    #
+    #   @order.recurring(@payment, :interval => {:length => 1, :unit => :month},
     #    :duration => {:start_date => Date.today, :occurrences => 999})
-    #   
+    #
     def recurring(payment_object, options={})
       defaults = {:order_id => number}
       options = defaults.merge(options).symbolize_keys
-    
+
       self.build_addresses
-      
+
       authorization = Payment.class_for(payment_object).recurring(
         gross_total, payment_object, payment_options(options))
 
@@ -130,8 +130,8 @@ module MerchantSidekick
       end
       authorization
     end
-  
-    # E.g. 
+
+    # E.g.
     #
     #   @order.pay_recurring("c3s34", :add_line_items => @line_items)
     #
@@ -144,13 +144,13 @@ module MerchantSidekick
       else
         self.payments.find(:first, :conditions => ["payments.id = ? OR payments.reference = ? OR payments.uuid = ?", authorization])
       end
-    
+
       # recurring expired
       if !self.pending? || self.purchase_invoices.paid.count > recurring_payment.duration_occurrences
         raise MerchantSidekick::RecurringPaymentError, "Recurring order #{self.number} expired"
       end
-    
-      transaction do 
+
+      transaction do
         buyer.send(:before_pay_recurring, self) if buyer && buyer.respond_to?(:before_pay_recurring)
         self.additional_line_items(options[:add_line_items])
         self.build_invoice unless self.last_unsaved_invoice
@@ -164,7 +164,7 @@ module MerchantSidekick
         authorization_result
       end
     end
-  
+
     def authorize_recurring(authorization=nil, options={})
       # recurring payment
       recurring_payment = if authorization.nil?
@@ -174,17 +174,17 @@ module MerchantSidekick
       else
         self.payments.find(:first, :conditions => ["payments.id = ? OR payments.reference = ? OR payments.uuid = ?", authorization])
       end
-    
+
       # recurring expired
       if !self.pending? || self.purchase_invoices.paid.count > recurring_payment.duration_occurrences
         raise MerchantSidekick::RecurringPaymentError, "Recurring order #{self.number} expired"
       end
-    
-      transaction do 
+
+      transaction do
         buyer.send(:before_authorize_recurring, self) if buyer && buyer.respond_to?(:before_authorize_recurring)
         self.additional_line_items(options[:add_line_items])
         self.build_invoice unless self.last_unsaved_invoice
-      
+
         authorization_result = self.last_unsaved_invoice.authorize(recurring_payment, options)
         if authorization_result.success?
           process_payment!
@@ -193,12 +193,12 @@ module MerchantSidekick
         authorization_result
       end
     end
-  
+
     # returns a hash of additional merchant data passed to authorize
     # you want to pass in the following additional options
     #
     #   :ip => ip address of the buyer
-    #   
+    #
     def payment_options(options={})
       { # general
         :buyer => self.buyer,
@@ -215,10 +215,10 @@ module MerchantSidekick
         :shipping_address =>  self.shipping_address ? self.shipping_address.to_merchant_attributes : nil
       }.merge(options)
     end
-  
+
     # yes, i am a purchase order!
     def purchase_order?
-      true 
+      true
     end
 
     # used in build_invoice to determine which type of invoice
@@ -236,7 +236,7 @@ module MerchantSidekick
     end
 
     def build_invoice
-      new_invoice = self.purchase_invoices.build( 
+      new_invoice = self.purchase_invoices.build(
         :line_items       => self.duplicate_line_items,
         :net_amount       => self.net_total,
         :tax_amount       => self.tax_total,
@@ -256,7 +256,7 @@ module MerchantSidekick
           li.update_attribute(:invoice, new_invoice)
         end
       end
-    
+
       # duplicate addresses
       new_invoice.build_origin_address(self.origin_address.content_attributes) if self.origin_address
       new_invoice.build_billing_address(self.billing_address.content_attributes) if self.billing_address
@@ -266,7 +266,7 @@ module MerchantSidekick
       @additional_line_items = nil
       new_invoice
     end
-  
+
     # make sure we get a copy of the line items
     def duplicate_line_items
       result = []
@@ -282,7 +282,7 @@ module MerchantSidekick
       end
       result
     end
-  
+
     # process additional line items before build invoice
     def additional_line_items(items)
       # add line items
@@ -303,12 +303,12 @@ module MerchantSidekick
         end
       end
     end
-  
+
     # Builds billing, shipping and origin addresses
     def build_addresses(options={})
       raise ArgumentError.new("No address declared for buyer (#{buyer.class.name} ##{buyer.id}), use acts_as_addressable :billing") \
         unless buyer.respond_to?(:find_default_address)
-    
+
       # buyer's billing or default address
       unless default_billing_address
         if buyer.respond_to?(:billing_address) && buyer.default_billing_address
@@ -337,7 +337,7 @@ module MerchantSidekick
       if seller
         raise ArgumentError.new("No address for seller (#{seller.class.name} ##{seller.id}), use acts_as_addressable") \
           unless seller.respond_to?(:find_default_address)
-      
+
         unless default_origin_address
           if seller.respond_to?(:billing_address) && seller.find_billing_address
             self.build_origin_address(seller.find_billing_address.content_attributes)
@@ -349,7 +349,7 @@ module MerchantSidekick
         end
       end
     end
-  
+
   end
 
   class ::MerchantSidekick::RecurringPaymentError < Exception

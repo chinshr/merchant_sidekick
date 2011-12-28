@@ -2,10 +2,10 @@ module MerchantSidekick #:nodoc:
   module Addressable #:nodoc:
 
     def self.included(base)
-      base.extend ClassMethods  
+      base.extend ClassMethods
     end
 
-    # Addressable adds address associations in the following way: 
+    # Addressable adds address associations in the following way:
     #
     #   * supports multiple types of addresses, e.g. BusinessAddress
     #   * associations for each type
@@ -22,7 +22,7 @@ module MerchantSidekick #:nodoc:
     #   end
     #
     # or
-    # 
+    #
     #   class User < ActiveRecord::base
     #     has_address
     #     ...
@@ -39,7 +39,7 @@ module MerchantSidekick #:nodoc:
     #   end
     #
     module ClassMethods
-      
+
       # Defines a single address or a single address per address type
       def has_address(*arguments)
         attributes, options = [], {:has_one => true, :has_many => false}
@@ -133,7 +133,7 @@ module MerchantSidekick #:nodoc:
         include MerchantSidekick::Addressable::InstanceMethods
         extend MerchantSidekick::Addressable::SingletonMethods
       end
-      
+
       # Defines a single address or a single address per address type
       def has_addresses(*arguments)
         attributes, options = [], {:has_one => false, :has_many => true}
@@ -202,7 +202,7 @@ module MerchantSidekick #:nodoc:
         include MerchantSidekick::Addressable::InstanceMethods
         extend MerchantSidekick::Addressable::SingletonMethods
       end
-      
+
     end
 
     # This module contains class methods
@@ -307,7 +307,7 @@ module MerchantSidekick #:nodoc:
       end
 
       # Used for finding the billing address if none is present
-      # the billing address is cloned from business address and 
+      # the billing address is cloned from business address and
       # if that is not found then a new billing address is created
       # Usage:
       #   find_or_clone_address :billing, an_address, { :company_name => "Bla Inc." }

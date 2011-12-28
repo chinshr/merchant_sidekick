@@ -1,5 +1,5 @@
 # Implements the Paypal Website Payments Pro specific gateway configuration
-# 
+#
 # development:
 #   api_username: seller_xyz_biz_api1.example.com
 #   api_password: DMLxxx
@@ -17,8 +17,8 @@ module MerchantSidekick
       cattr_accessor :paypal_pem_file_name
 
       #--- class methods
-      class << self 
-    
+      class << self
+
         def config_file_name
           "paypal.yml"
         end
@@ -36,14 +36,14 @@ module MerchantSidekick
           ActiveMerchant::Billing::Base.mode = :test if result[:mode] =~ /test/i
           result
         end
-  
+
         # returns a gateway instance unless there is one assigned globally in the
-        # environment files 
+        # environment files
         #
         # e.g.
-        # 
-        #  config.after_initialize do 
-        #    ...  
+        #
+        #  config.after_initialize do
+        #    ...
         #    CreditCardPayment.gateway = ActiveMerchant::Billing::BogusGateway.new
         #    ...
         #  end
@@ -51,7 +51,7 @@ module MerchantSidekick
         def gateway(file_name=nil)
           unless @@gateway
             yml_config = config(file_name)
-        
+
             options = {}
             options.merge!({
               :login  => yml_config[:api_username],
@@ -63,7 +63,7 @@ module MerchantSidekick
           end
           @@gateway
         end
-  
+
       end
 
     end

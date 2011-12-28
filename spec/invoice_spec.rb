@@ -23,21 +23,21 @@ describe MerchantSidekick::Invoice do
       :sellable => @product
     )
     @invoice.line_items.push(@line_item)
-    
+
     @credit_card = valid_credit_card
   end
-  
+
   it "should be a valid invoice instance" do
     transaction do
       # money
       @invoice.net_total.should   == '29.95'.to_money
       @invoice.tax_total.should   == '0.00'.to_money
       @invoice.gross_total.should == '29.95'.to_money
-    
+
       # actors
       @invoice.seller.should == @seller
       @invoice.buyer.should  == @buyer
-    
+
       # line item
       @invoice.line_items.size.should == 1
       @invoice.line_items[0].invoice.should be_is_a(MerchantSidekick::PurchaseInvoice)
@@ -75,5 +75,5 @@ describe MerchantSidekick::Invoice do
       @invoice.line_items[0].should == @line_item
     end
   end
-  
+
 end

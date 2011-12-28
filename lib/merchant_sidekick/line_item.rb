@@ -5,15 +5,15 @@
 module MerchantSidekick
   class LineItem < ActiveRecord::Base
     self.table_name = "line_items"
-    
+
     #--- accessors
-    cattr_accessor :tax_rate_class_name 
-  
+    cattr_accessor :tax_rate_class_name
+
     #--- associations
     belongs_to :order, :class_name => "::MerchantSidekick::Order"
     belongs_to :invoice, :class_name => "::MerchantSidekick::Invoice"
     belongs_to :sellable, :polymorphic => true
-  
+
     #--- mixins
     money :net_amount,   :cents => :net_cents,   :currency => "currency"
     money :tax_amount,   :cents => :tax_cents,   :currency => "currency"
@@ -23,7 +23,7 @@ module MerchantSidekick
     before_save :save_sellable
 
     #--- instance methods
-  
+
     # set #amount when adding sellable.  This method is aliased to <tt>sellable=</tt>.
     def sellable_with_price=(a_sellable)
       calculate(a_sellable)
@@ -32,7 +32,7 @@ module MerchantSidekick
     alias_method_chain :sellable=, :price
 
     # There used to be a money :amount declration. When we added
-    # taxable line items, we assume that amount will refer to the 
+    # taxable line items, we assume that amount will refer to the
     # net_amount (net_cents)
     def amount
       self.net_amount
@@ -50,7 +50,7 @@ module MerchantSidekick
       self.gross_amount
     end
     alias_method :gross_total, :total
-  
+
     # short for tax_amount
     def tax
       self.tax_amount
@@ -66,21 +66,21 @@ module MerchantSidekick
     end
 
     protected
-  
+
     def calculate(a_sellable)
       if a_sellable && a_sellable.price
         tax_rate_class = tax_rate_class_name.camelize.constantize rescue nil
-        
+
         # calculate tax amounts
         #
         # If we want to provide tax rates based on the order's billing address location,
-        # we require a class method, 
+        # we require a class method,
         #
         # e.g.
         #
         #   Tax.find_tax_rate({:origin => {...}, :destination => {...}})
         #   # where each hash provides :country_code => 'DE', :state_code => 'BY'
-        
+
         if tax_rate_class && a_sellable.respond_to?(:taxable?) && a_sellable.send(:taxable?)
           # find tax rate for billing address, country/province
           self.tax_rate = tax_rate_class.find_tax_rate(
@@ -119,10 +119,10 @@ module MerchantSidekick
         self.currency = "USD"
       end
     end
-    
+
     def save_sellable
       sellable.save if sellable.new_record?
     end
-  
+
   end
 end

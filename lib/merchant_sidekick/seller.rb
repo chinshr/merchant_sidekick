@@ -26,22 +26,22 @@ module MerchantSidekick
         has_many :sales_invoices, :as => :seller, :class_name => "::MerchantSidekick::SalesInvoice"
       end
     end
-    
+
     module InstanceMethods
-      
+
       def sell_to(buyer, *arguments)
         sell(arguments, :buyer => buyer)
       end
-      
+
       protected
-      
+
       # Sell sellables (line_items) and add them to a sales order
       # The seller will be this person.
       #
       # e.g.
       #
       #   seller.sell(@product, :buyer => @buyer)
-      # 
+      #
       def sell(*arguments)
         sellables = []
         options = default_sell_options
@@ -56,14 +56,14 @@ module MerchantSidekick
             sellables << argument
           end
         end
-        
+
         raise ArgumentError.new("No sellable (e.g. product) model provided") if sellables.empty?
         raise ArgumentError.new("Sellable models must have a :price") unless sellables.all? {|sellable| sellable.respond_to? :price}
-            
+
         self.sales_orders.build do |so|
           so.buyer = options[:buyer]
           so.build_addresses
-          
+
           sellables.each do |sellable|
             if sellable && sellable.respond_to?(:before_add_to_order)
               sellable.send(:before_add_to_order, self)
@@ -76,12 +76,12 @@ module MerchantSidekick
           self
         end
       end
-      
+
       # override in model, e.g. :buyer => @person
       def default_sell_options
         {}
       end
-      
+
     end
   end
 end

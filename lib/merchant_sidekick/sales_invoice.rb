@@ -3,13 +3,13 @@ module MerchantSidekick
   class SalesInvoice < Invoice
     #--- associations
     #has_many :sales_orders, :class_name => "MerchantSidekick::SalesOrder"
-  
+
     #--- instance methods
-  
+
     def sales_invoice?
-      true 
+      true
     end
-  
+
     # cash invoice, combines authorization and capture in one step
     def cash(payment_object, options={})
       transaction do
@@ -30,12 +30,12 @@ module MerchantSidekick
         cash_result
       end
     end
-  
+
     # returns a hash of additional merchant data passed to authorize
     # you want to pass in the following additional options
     #
     #   :ip => ip address of the buyer
-    #   
+    #
     def payment_options(options={})
       { # general
         :buyer => self.buyer,
@@ -51,6 +51,6 @@ module MerchantSidekick
         :shipping_address =>  self.shipping_address ? self.shipping_address.to_merchant_attributes : nil
       }.merge(options)
     end
-  
+
   end
 end

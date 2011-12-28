@@ -107,7 +107,7 @@ module MerchantSidekick
         self[:name]
       end
 
-      # returns or sets the item number based on the product's 
+      # returns or sets the item number based on the product's
       # SKU, number, or id
       def item_number
         self[:item_number]
@@ -135,18 +135,18 @@ module MerchantSidekick
 
       # Price per piece
       # Example:
-      #   12 bottles (pieces) of a unit price of $45.00 per box (unit price) 
+      #   12 bottles (pieces) of a unit price of $45.00 per box (unit price)
       #   is a per piece price of $3.75
       def price_per_piece
         self.unit_price / (self.pieces || 1) if self.unit_price
       end
 
       # Returns a localized description text
-      # e.g. "12 months subscription for $74 ($5.95 per month)"  
+      # e.g. "12 months subscription for $74 ($5.95 per month)"
       def description
         self[:description]
       end
-  
+
     end
   end
 end

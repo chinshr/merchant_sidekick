@@ -28,11 +28,11 @@ describe MerchantSidekick::SalesInvoice do
     )
     @line_item.should_not be_nil
     @invoice.line_items.push(@line_item)
-    
+
     # credit card
     @credit_card = valid_credit_card
   end
-  
+
   it "should cash" do
     transaction do
       lambda {
@@ -43,7 +43,7 @@ describe MerchantSidekick::SalesInvoice do
       }.should change(MerchantSidekick::Payment, :count).by(1)
     end
   end
-  
+
   it "should not cash" do
     transaction do
       lambda {
@@ -54,5 +54,5 @@ describe MerchantSidekick::SalesInvoice do
       }.should change(MerchantSidekick::Payment, :count).by(1)
     end
   end
-  
+
 end

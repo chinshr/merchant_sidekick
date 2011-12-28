@@ -122,7 +122,7 @@ end
 class Product < ActiveRecord::Base
   money :price, :cents => :price_cents, :currency => :price_currency
   acts_as_sellable
-  
+
   # TODO weird cart serialization workaround
   def target; true; end
 end
@@ -208,10 +208,10 @@ end
 module ActiveMerchant
   module Billing
     class BogusGateway < Gateway
-      
+
       # Transfers money to one or multiple recipients (bulk transfer).
       #
-      # Overloaded activemerchant bogus gateways to support transfers, similar 
+      # Overloaded activemerchant bogus gateways to support transfers, similar
       # to Paypal Website Payments Pro functionality.
       #
       # E.g.
@@ -223,7 +223,7 @@ module ActiveMerchant
       #     [2450, 'wilma@example.com', :note => 'You will receive an extra payment on March 24.'],
       #     [2000, 'barney@example.com'],
       #     :subject => "Salary January.", :note => "Thanks for your hard work."
-      
+
       def transfer(money, paypal_account, options={})
         if paypal_account == 'fail@error.tst'
           Response.new(false, FAILURE_MESSAGE, {:paid_amount => money.to_s, :error => FAILURE_MESSAGE },:test => true)
@@ -235,7 +235,7 @@ module ActiveMerchant
           raise Error, ERROR_MESSAGE
         end
       end
-      
+
     end
   end
 end

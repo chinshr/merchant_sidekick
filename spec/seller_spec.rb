@@ -1,7 +1,7 @@
 require File.expand_path("../spec_helper", __FILE__)
 
 describe "A seller's model" do
-  
+
   it "should be able to sell" do
     SellingUser.new.should respond_to(:sell)
   end
@@ -9,7 +9,7 @@ describe "A seller's model" do
   it "should be able to sell" do
     SellingUser.new.should respond_to(:sell_to)
   end
-  
+
   it "should have many orders" do
     lambda { SellingUser.new.orders(true).first }.should_not raise_error
   end
@@ -39,9 +39,9 @@ describe "A seller sells a product" do
     @sam_shipping   = @sam.create_shipping_address(addresses(:sam_shipping).content_attributes)
     @product        = products(:widget)
   end
-  
+
   it "should create a new order" do
-    transaction do 
+    transaction do
       lambda do
         order = @sally.sell_to @sam, @product
         order.should be_an_instance_of(MerchantSidekick::SalesOrder)
@@ -50,9 +50,9 @@ describe "A seller sells a product" do
       end.should change(MerchantSidekick::Order, :count)
     end
   end
-  
+
   it "should add to seller's orders" do
-    transaction do 
+    transaction do
       order = @sally.sell_to(@sam, @product)
       order.save!
       @sally.orders.last.should == order
@@ -61,34 +61,34 @@ describe "A seller sells a product" do
       order.buyer.should == @sam
     end
   end
-  
+
   it "should create line items" do
-    transaction do 
+    transaction do
       order = @sally.sell_to(@sam, @product)
       order.line_items.size.should == 1
       order.line_items.first.sellable.should == @product
     end
   end
-  
+
   it "should set line item amount to sellable price" do
     transaction do
       order = @sally.sell_to @sam, @product
       order.line_items.first.amount.should == @product.price
     end
   end
-  
+
   it "should set line item amount to 0 if sellable does not have a price" do
-    transaction do 
+    transaction do
       @product.price = 0
       order = @sally.sell_to @sam, @product
       order.line_items.first.amount.should == 0.to_money
     end
   end
-  
+
 end
 
 describe "A seller selling multiple products" do
-  
+
   def setup
     @sally          = users(:sally)
     @sally_billing  = @sally.create_billing_address(addresses(:sally_billing).content_attributes)
@@ -99,7 +99,7 @@ describe "A seller selling multiple products" do
     @products       = [products(:widget), products(:knob)]
     @order          = @sally.sell_to @sam, @products
   end
-  
+
   it "should create line items for each sellable" do
     transaction do
       lambda { @order.save! }.should change(MerchantSidekick::LineItem, :count).by(2)
@@ -110,7 +110,7 @@ describe "A seller selling multiple products" do
 end
 
 describe "A seller selling no product" do
-  
+
   def setup
     @sally          = users(:sally)
     @sally_billing  = @sally.create_billing_address(addresses(:sally_billing).content_attributes)
@@ -126,17 +126,17 @@ describe "A seller selling no product" do
       lambda { @sally.sell(@product) }.should raise_error(NoMethodError)
     end
   end
-  
+
   it "should raise an error for there is no sellable" do
     transaction do
       lambda { @sally.sell_to(@sam) }.should raise_error(ArgumentError)
     end
   end
-  
+
   it "should raise an error for no sellable" do
     transaction do
       lambda { @sally.sell_to(@sam, []) }.should raise_error(ArgumentError)
     end
   end
-  
+
 end

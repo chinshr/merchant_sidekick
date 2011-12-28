@@ -1,7 +1,7 @@
 require File.expand_path("../spec_helper", __FILE__)
 
 describe MerchantSidekick::ShoppingCart::Cart do
-  
+
   def setup
     @user = users(:sam)
     @cart = MerchantSidekick::ShoppingCart::Cart.new('USD')
@@ -13,14 +13,14 @@ describe MerchantSidekick::ShoppingCart::Cart do
       cart = MerchantSidekick::ShoppingCart::Cart.new
       cart.currency.should == 'USD'
       cart.total_price == Money.new(0, 'USD')
-    
+
       # user and currency
       cart = MerchantSidekick::ShoppingCart::Cart.new('EUR')
       cart.currency.should == 'EUR'
       cart.total_price == Money.new(0, 'EUR')
     end
   end
-  
+
   it "should add one product" do
     transaction do
       widget = products(:widget)
@@ -51,7 +51,7 @@ describe MerchantSidekick::ShoppingCart::Cart do
       @cart.should be_empty
     end
   end
-  
+
   it "should add a card line item" do
     transaction do
       widget = products(:widget)
@@ -92,7 +92,7 @@ describe MerchantSidekick::ShoppingCart::Cart do
       @cart.total.to_s.should == "71.87"
     end
   end
-  
+
   it "should remove one cart item by product" do
     transaction do
       widget = products(:widget)
@@ -137,12 +137,12 @@ describe MerchantSidekick::ShoppingCart::Cart do
     transaction do
       widget = products(:widget)
       knob = products(:knob)
-      6.times do 
+      6.times do
         @cart.add(widget)
       end
       @cart.line_items.size.should == 1
       @cart.total.to_s.should == "179.70"
-      6.times do 
+      6.times do
         @cart.add(knob)
       end
       @cart.line_items.size.should == 2
@@ -172,7 +172,7 @@ describe MerchantSidekick::ShoppingCart::Cart do
       @cart.total.to_s.should == "59.90"
     end
   end
-  
+
   it "should update the cart by product" do
     transaction do
       widget = products(:widget)
@@ -187,7 +187,7 @@ describe MerchantSidekick::ShoppingCart::Cart do
       item = @cart.update(knob, 3)
       item.should_not be_nil
       item.product.should == @cart.line_items[1].product
-    
+
       @cart.total.to_s.should == "71.87"
       tbr_item = @cart.find(:first, knob)
       item = @cart.update(knob, 0)
