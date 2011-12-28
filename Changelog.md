@@ -1,5 +1,11 @@
 # MerchantSidekick Changelog
 
+## 0.4.1 (NOT RELEASED YET)
+
+* Fix overridden `build_#{relation}` method signature
+* Fix deprecations on class\_inheritable\_writer
+* Fix deprecations when using Money class with ActiveMerchant
+
 ## 0.4.0 (2011-12-27)
 
 * Compatibility with ActiveRecord 3.1
