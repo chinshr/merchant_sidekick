@@ -124,11 +124,11 @@ module MerchantSidekick #:nodoc:
           end
         end
 
-        write_inheritable_attribute(:acts_as_addressable_options, {
-          :association_type => options[:has_one] ? :has_one : :has_many,
-          :attributes => attributes
-        })
-        class_inheritable_reader :acts_as_addressable_options
+        class_attribute :acts_as_addressable_options, :instance_writer => false
+        self.acts_as_addressable_options = {
+          :attributes       => attributes,
+          :association_type => options[:has_one] ? :has_one : :has_many
+        }
 
         include MerchantSidekick::Addressable::InstanceMethods
         extend MerchantSidekick::Addressable::SingletonMethods
@@ -192,12 +192,11 @@ module MerchantSidekick #:nodoc:
           END
         end
 
-        # write options
-        write_inheritable_attribute(:acts_as_addressable_options, {
-          :association_type => options[:has_one] ? :has_one : :has_many,
-          :attributes => attributes
-          })
-        class_inheritable_reader :acts_as_addressable_options
+        class_attribute :acts_as_addressable_options, :instance_writer => false
+        self.acts_as_addressable_options = {
+          :attributes       => attributes,
+          :association_type => options[:has_one] ? :has_one : :has_many
+        }
 
         include MerchantSidekick::Addressable::InstanceMethods
         extend MerchantSidekick::Addressable::SingletonMethods
