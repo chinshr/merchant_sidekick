@@ -1,20 +1,20 @@
 require File.expand_path("../spec_helper", __FILE__)
 
 describe MerchantSidekick::SalesOrder, "with valid account" do
-  
+
   def setup
     @sam = users(:sam)
     @sam_billing = @sam.create_billing_address(addresses(:sam_billing).content_attributes)
     @sam_shipping = @sam.create_shipping_address(addresses(:sam_shipping).content_attributes)
-    
+
     @user = @sally = users(:sally)
     @sally_billing = @sally.create_billing_address(addresses(:sally_billing).content_attributes)
     @sally_shipping = @sally.create_shipping_address(addresses(:sally_shipping).content_attributes)
-    
+
     @product = products(:widget)
     @order = @sally.sell_to @sam, @product
     @account = "pass@test.tst"
-    
+
     # ActiveMerchant::Billing::Base.mode = :test
   end
 
@@ -23,7 +23,7 @@ describe MerchantSidekick::SalesOrder, "with valid account" do
       @order.cash(@account).should be_instance_of(MerchantSidekick::ActiveMerchant::CreditCardPayment)
     end
   end
-  
+
   it "should return success" do
     transaction do
       @order.cash(@account).should be_success
@@ -46,7 +46,7 @@ describe MerchantSidekick::SalesOrder, "with valid account" do
       @order.invoice.should be_paid
     end
   end
-  
+
   it "should set payment amount equal to order amount" do
     transaction do
       @order.cash(@account).amount.should == @order.total

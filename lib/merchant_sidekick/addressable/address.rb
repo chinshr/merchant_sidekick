@@ -3,7 +3,7 @@ module MerchantSidekick
     # Super class of all types of addresses
     class Address < ActiveRecord::Base
       self.table_name = "addresses"
-      
+
       #--- column mapping
       cattr_accessor :street_address_column
       @@street_address_column = :street
@@ -53,20 +53,20 @@ module MerchantSidekick
         self.addressable.send(:before_save_address, self) if addressable && addressable.respond_to?(:before_save_address)
       end
 
-      #--- class methods 
-  
+      #--- class methods
+
       class << self
-  
+
         def kind
           name.underscore
         end
-  
+
         # Returns the binding to be used in sub classes of Address
         def get_binding
           binding
         end
 
-        # Helper class method to look up all addresss for 
+        # Helper class method to look up all addresss for
         # addressable class name and addressable id.
         def find_address_for_addressable(addressable_str, addressable_id)
           find(:all,
@@ -76,7 +76,7 @@ module MerchantSidekick
         end
 
         # Helper class method to look up a addressable object
-        # given the addressable class name and id 
+        # given the addressable class name and id
         def find_addressable(addressable_str, addressable_id)
           addressable_str.constantize.find(addressable_id)
         end
@@ -86,7 +86,7 @@ module MerchantSidekick
           sanitize_sql_without_key_translation(condition)
         end
         alias_method_chain :sanitize_sql, :key_translation
-    
+
         # TODO not used
         def translate_column_key(in_column)
           out_column = class_variable_get("@@#{in_column}")
@@ -96,11 +96,11 @@ module MerchantSidekick
           else out_column
           end
         end
-    
+
         def content_column_names
           content_columns.map(&:name) - %w(kind addressable_type addressable_id updated_at created_at)
         end
-    
+
       end
 
       #--- instance methods
@@ -316,7 +316,7 @@ module MerchantSidekick
             when :female then 'f'
             else ''
             end
-          elsif a_gender.is_a? String        
+          elsif a_gender.is_a? String
             self[gender_column] = case a_gender
             when 'm' then 'm'
             when 'f' then 'f'
@@ -371,7 +371,7 @@ module MerchantSidekick
       def province_or_province_code
         self.province.to_s.empty? ? self.province_code : self.province
       end
-  
+
       # returns either the full country name or the country code (e.g. DE)
       def country_or_country_code
         self.country.to_s.empty? ? self.country_code : self.country
@@ -393,8 +393,8 @@ module MerchantSidekick
       def content_attributes
         self.attributes.reject {|k,v| !self.content_column_names.include?(k.to_s)}.symbolize_keys
       end
-  
-      # returns content column name strings 
+
+      # returns content column name strings
       def content_column_names
         self.class.content_column_names
       end

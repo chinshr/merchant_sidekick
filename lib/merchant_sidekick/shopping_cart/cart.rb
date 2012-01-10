@@ -7,7 +7,7 @@ module MerchantSidekick
       attr_reader :line_items
       attr_reader :currency
       attr_accessor :options
-  
+
       def initialize(currency_code = 'USD', options = {})
         @currency = currency_code
         @options = {:currency_code => currency_code}.merge(options)
@@ -16,7 +16,7 @@ module MerchantSidekick
 
       # Add a cart_line_item or a product. In case, a product is added
       # it will be copied and the copy added as a cart_line_item.
-      # if thing is a Product, it needs to be converted to a 
+      # if thing is a Product, it needs to be converted to a
       # MerchantSidekick::ShoppingCart::LineItem first.
       def add(thing, quantity=1, options={})
         if thing.is_a?(MerchantSidekick::ShoppingCart::LineItem)
@@ -66,7 +66,7 @@ module MerchantSidekick
       def empty?
         @line_items.empty?
       end
-  
+
       def total_price
         sum = ::Money.new(1, self.currency)
         @line_items.each {|i| sum += i.total_price }
@@ -95,7 +95,7 @@ module MerchantSidekick
       def cart_line_item(product, quantity=1, line_options={})
         raise "No price column available for '#{product.class.name}'" unless product.respond_to?(:price)
         # we need to set currency explicitly here for correct money conversion of the cart_line_item
-        MerchantSidekick::ShoppingCart::LineItem.new do |line_item| 
+        MerchantSidekick::ShoppingCart::LineItem.new do |line_item|
           line_item.options = self.options.merge(line_options)
           line_item.currency = self.currency
           line_item.quantity = quantity
@@ -136,7 +136,7 @@ module MerchantSidekick
         end
         item
       end
-  
+
       # Add purchasable, which most likely will be a product
       # Returns the total price
       def add_product(a_product, quantity=1, options={})
@@ -158,7 +158,7 @@ module MerchantSidekick
         deleted_line_item = @line_items.delete(item_to_remove) if item_to_remove
         deleted_line_item
       end
-  
+
       # Remove a purchasable and adjust the total price
       def remove_product(a_product, options={})
         deleted_line_item = nil
@@ -174,7 +174,7 @@ module MerchantSidekick
         item.quantity = quantity if item
         item
       end
-  
+
       # updates quantity py product
       def update_product(a_product, quantity, options={})
         return remove(a_product, options) if quantity <= 0
@@ -190,7 +190,7 @@ module MerchantSidekick
           @line_items.find { |i| i.product_id == a_cart_line_item.product.id && i.product_type == a_cart_line_item.product.class.base_class.name }
         end
       end
-  
+
       def find_line_items_by_product(what, a_product, options={})
         if :all == what
           @line_items.select { |i| i.product_id == a_product.id && i.product_type == a_product.class.base_class.name }

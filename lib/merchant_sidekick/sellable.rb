@@ -5,7 +5,7 @@ module MerchantSidekick
     end
 
     module ClassMethods
-      
+
       # Declares a model as sellable.
       #
       # E.g.
@@ -24,40 +24,40 @@ module MerchantSidekick
         has_many :orders, :through => :line_items, :class_name => "MerchantSidekick::Order"
       end
     end
-    
+
     module SingletonMethods
       def sellable?
         true
       end
     end
-    
+
     module InstanceMethods
-      
+
       def sellable?
         true
       end
-      
+
       # Funny name, but it returns true if the :price represents
-      # a gross price including taxes. For that there must be a 
+      # a gross price including taxes. For that there must be a
       # method called price_is_gross or price_is_gross! as it is
       # in Issue model
       # price_is_net? and/or price_is_gross? should be overwritten
       def price_is_gross?
         false
       end
-      
+
       # Opposite of price_is_gross?
       def price_is_net?
         true
       end
-      
+
       # This is a product, where the gross and net prices are equal, or in other words
       # a tax for this product is not applicable, e.g. for $10 purchasing credit
       # should be overwritten if otherwise
       def taxable?
         true
       end
-      
+
       # There can only be one authorized order per sellable,
       # so the first authorziation is it!
       #

@@ -11,7 +11,7 @@ ActiveRecord::Schema.define :version => 0 do
     t.column :name, :string
     t.column :type, :string
   end
-  
+
   create_table :products, :force => true do |t|
     t.column :title, :string
     t.column :description, :text

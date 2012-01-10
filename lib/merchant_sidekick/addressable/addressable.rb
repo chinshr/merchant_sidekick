@@ -2,10 +2,10 @@ module MerchantSidekick #:nodoc:
   module Addressable #:nodoc:
 
     def self.included(base)
-      base.extend ClassMethods  
+      base.extend ClassMethods
     end
 
-    # Addressable adds address associations in the following way: 
+    # Addressable adds address associations in the following way:
     #
     #   * supports multiple types of addresses, e.g. BusinessAddress
     #   * associations for each type
@@ -22,7 +22,7 @@ module MerchantSidekick #:nodoc:
     #   end
     #
     # or
-    # 
+    #
     #   class User < ActiveRecord::base
     #     has_address
     #     ...
@@ -39,7 +39,7 @@ module MerchantSidekick #:nodoc:
     #   end
     #
     module ClassMethods
-      
+
       # Defines a single address or a single address per address type
       def has_address(*arguments)
         attributes, options = [], {:has_one => true, :has_many => false}
@@ -53,21 +53,19 @@ module MerchantSidekick #:nodoc:
         end
 
         if attributes.empty?
-          has_one :address, :as => :addressable, :dependent => :destroy, 
+          has_one :address, :as => :addressable, :dependent => :destroy,
             :class_name => "MerchantSidekick::Addressable::Address"
 
-          class_eval <<-THIS
+          class_eval(<<-END, __FILE__, __LINE__+1)
+            def build_address_with_addressable(attributes={}, options={})
+              build_address_without_addressable(attributes.merge(:addressable => self), options)
+            end
+            alias_method_chain :build_address, :addressable
 
-          def build_address_with_addressable(options={})
-            build_address_without_addressable(options.merge(:addressable => self))
-          end
-          alias_method_chain :build_address, :addressable
-
-          def address_attributes=(attributes)
-            self.address ? self.address.attributes = attributes : self.build_address(attributes)
-          end
-
-          THIS
+            def address_attributes=(attributes)
+              self.address ? self.address.attributes = attributes : self.build_address(attributes)
+            end
+          END
         else
           attributes.each do |attribute|
             # Address decendent
@@ -96,47 +94,46 @@ module MerchantSidekick #:nodoc:
             :as => :addressable,
             :dependent => :destroy
 
-            class_eval <<-THIS
+            class_eval(<<-END, __FILE__, __LINE__+1)
+              def build_#{attribute}_address_with_addressable(options={})
+                build_#{attribute}_address_without_addressable(options.merge(:addressable => self))
+              end
+              alias_method_chain :build_#{attribute}_address, :addressable
 
-            def build_#{attribute}_address_with_addressable(options={})
-              build_#{attribute}_address_without_addressable(options.merge(:addressable => self))
-            end
-            alias_method_chain :build_#{attribute}_address, :addressable
+              def find_#{attribute}_address(options={})
+                find_address(:#{attribute}, options)
+              end
 
-            def find_#{attribute}_address(options={})
-              find_address(:#{attribute}, options)
-            end
+              def find_default_#{attribute}_address
+                find_default_address(:#{attribute})
+              end
+              alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
 
-            def find_default_#{attribute}_address
-              find_default_address(:#{attribute})
-            end
-            alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
+              def find_or_build_#{attribute}_address(options={})
+                find_or_build_address(:#{attribute}, options)
+              end
 
-            def find_or_build_#{attribute}_address(options={})
-              find_or_build_address(:#{attribute}, options)
-            end
+              def find_#{attribute}_address_or_clone_from(from_address, options={})
+                find_or_clone_address(:#{attribute}, from_address, options)
+              end
 
-            def find_#{attribute}_address_or_clone_from(from_address, options={})
-              find_or_clone_address(:#{attribute}, from_address, options)
-            end
-
-            def #{attribute}_address_attributes=(attributes)
-              self.#{attribute}_address ? self.#{attribute}_address.attributes = attributes : self.build_#{attribute}_address(attributes)
-            end
-            THIS
+              def #{attribute}_address_attributes=(attributes)
+                self.#{attribute}_address ? self.#{attribute}_address.attributes = attributes : self.build_#{attribute}_address(attributes)
+              end
+            END
           end
         end
 
-        write_inheritable_attribute(:acts_as_addressable_options, {
-          :association_type => options[:has_one] ? :has_one : :has_many,
-          :attributes => attributes
-        })
-        class_inheritable_reader :acts_as_addressable_options
+        class_attribute :acts_as_addressable_options, :instance_writer => false
+        self.acts_as_addressable_options = {
+          :attributes       => attributes,
+          :association_type => options[:has_one] ? :has_one : :has_many
+        }
 
         include MerchantSidekick::Addressable::InstanceMethods
         extend MerchantSidekick::Addressable::SingletonMethods
       end
-      
+
       # Defines a single address or a single address per address type
       def has_addresses(*arguments)
         attributes, options = [], {:has_one => false, :has_many => true}
@@ -154,19 +151,19 @@ module MerchantSidekick #:nodoc:
 
         attributes.each do |attribute|
           address_class = <<-ADDRESS
-          class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
-            def self.kind
-              '#{attribute}'.to_sym
+            class #{attribute.to_s.pluralize.classify}Address < MerchantSidekick::Addressable::Address
+              def self.kind
+                '#{attribute}'.to_sym
+              end
+
+              #{ attributes.collect {|a| "def self.#{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
+
+              def kind
+                '#{attribute}'.to_sym
+              end
+
+              #{ attributes.collect {|a| "def #{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
             end
-
-            #{ attributes.collect {|a| "def self.#{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
-
-            def kind
-              '#{attribute}'.to_sym
-            end
-
-            #{ attributes.collect {|a| "def #{a}?; #{a == attribute ? 'true' : 'false'}; end" }.join("\n") }
-          end
           ADDRESS
           eval address_class, TOPLEVEL_BINDING
 
@@ -175,37 +172,36 @@ module MerchantSidekick #:nodoc:
           :as => :addressable,
           :dependent => :destroy
 
-          class_eval <<-THIS
-          def find_#{attribute}_addresses(options={})
-            find_addresses(:all, :#{attribute}, options)
-          end
+          class_eval(<<-END, __FILE__, __LINE__+1)
+            def find_#{attribute}_addresses(options={})
+              find_addresses(:all, :#{attribute}, options)
+            end
 
-          def find_default_#{attribute}_address
-            find_default_address(:#{attribute})
-          end
-          alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
+            def find_default_#{attribute}_address
+              find_default_address(:#{attribute})
+            end
+            alias_method :default_#{attribute}_address, :find_default_#{attribute}_address
 
-          def find_or_build_#{attribute}_address(options={})
-            find_or_build_address(:#{attribute}, options)
-          end
+            def find_or_build_#{attribute}_address(options={})
+              find_or_build_address(:#{attribute}, options)
+            end
 
-          def find_#{attribute}_address_or_clone_from(from_address, options={})
-            find_or_clone_address(:#{attribute}, from_address, options)
-          end
-          THIS
+            def find_#{attribute}_address_or_clone_from(from_address, options={})
+              find_or_clone_address(:#{attribute}, from_address, options)
+            end
+          END
         end
 
-        # write options
-        write_inheritable_attribute(:acts_as_addressable_options, {
-          :association_type => options[:has_one] ? :has_one : :has_many,
-          :attributes => attributes
-          })
-        class_inheritable_reader :acts_as_addressable_options
+        class_attribute :acts_as_addressable_options, :instance_writer => false
+        self.acts_as_addressable_options = {
+          :attributes       => attributes,
+          :association_type => options[:has_one] ? :has_one : :has_many
+        }
 
         include MerchantSidekick::Addressable::InstanceMethods
         extend MerchantSidekick::Addressable::SingletonMethods
       end
-      
+
     end
 
     # This module contains class methods
@@ -310,7 +306,7 @@ module MerchantSidekick #:nodoc:
       end
 
       # Used for finding the billing address if none is present
-      # the billing address is cloned from business address and 
+      # the billing address is cloned from business address and
       # if that is not found then a new billing address is created
       # Usage:
       #   find_or_clone_address :billing, an_address, { :company_name => "Bla Inc." }

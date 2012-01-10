@@ -7,18 +7,18 @@ module MerchantSidekick
   class Order < ActiveRecord::Base
     include AASM
     self.table_name = "orders"
-    
+
     belongs_to :seller, :polymorphic => true
     belongs_to :buyer, :polymorphic => true
     has_many   :line_items, :dependent => :destroy, :class_name => "::MerchantSidekick::LineItem"
     has_many   :payments, :as => :payable, :class_name => "::MerchantSidekick::Payment"
     has_many   :invoices, :foreign_key => :order_id, :class_name => "::MerchantSidekick::Invoice"
-  
+
     money :net_amount,   :cents => :net_cents,   :currency => :currency
     money :tax_amount,   :cents => :tax_cents,   :currency => :currency
     money :gross_amount, :cents => :gross_cents, :currency => :currency
     has_address :origin, :billing, :shipping
-    
+
     #--- state machine
     aasm_initial_state :created
     aasm :column               => "status" do
@@ -32,7 +32,7 @@ module MerchantSidekick
       state :returned, :enter  => :enter_returned, :after => :after_returned
       state :refunded, :enter  => :enter_refunded, :after => :after_refunded
       state :canceled, :enter  => :enter_canceled, :after => :after_canceled
-      
+
       event :process_payment do
         transitions :from      => :created, :to => :pending, :guard => :guard_process_payment_from_created
       end
@@ -71,8 +71,8 @@ module MerchantSidekick
         transitions :from      => :pending, :to => :canceled, :guard => :guard_cancel_from_pending
       end
     end
-  
-    # state transition callbacks, to be overwritten 
+
+    # state transition callbacks, to be overwritten
     def enter_pending; end
     def enter_approved; end
     def enter_shipping; end
@@ -119,7 +119,7 @@ module MerchantSidekick
         value.encode! 'utf-8'
         value
       end
-    
+
     end
 
     #--- instance methods
@@ -147,10 +147,10 @@ module MerchantSidekick
     end
 
     # Net total amount
-    def net_total 
+    def net_total
       self.net_amount = line_items.inject(0.to_money) {|sum,l| sum + l.net_amount }
     end
-  
+
     # Calculates tax and sets the tax_amount attribute
     # It adds tax_amount across all line_items
     def tax_total
@@ -162,18 +162,18 @@ module MerchantSidekick
     def gross_total
       self.gross_amount = self.net_total + self.tax_total
     end
-  
+
     # Same as gross_total with tax
     def total
       self.gross_total
     end
 
-    # is the number of line items stored in the order, though not to be 
+    # is the number of line items stored in the order, though not to be
     # confused by the items_count
     def line_items_count
       self.line_items.count
     end
-  
+
     # total number of items purchased
     def items_count
       counter = 0
@@ -189,7 +189,7 @@ module MerchantSidekick
 
     # updates the order and all contained line_items after an address has changed
     # or an order item was added or removed. The order can only be evaluated if the
-    # created state is active. The order is saved if it is an existing order. 
+    # created state is active. The order is saved if it is an existing order.
     # Returns true if evaluation happend, false if not.
     def evaluate
       if :created == current_state
@@ -219,7 +219,7 @@ module MerchantSidekick
     def calculate
       self.total
     end
-  
+
     # override in subclass
     def to_invoice_class_name
     end
@@ -233,11 +233,11 @@ module MerchantSidekick
     def sales_order?
       false
     end
-  
+
     def push_payment(a_payment)
       a_payment.payable = self
       self.payments.push(a_payment)
     end
-  
+
   end
 end

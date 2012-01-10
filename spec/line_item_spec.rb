@@ -38,20 +38,20 @@ describe MerchantSidekick::LineItem, "a new line item" do
     @line_item = MerchantSidekick::LineItem.new(:sellable => @sellable)
     @line_item.amount.should == @sellable.price
   end
-  
+
   it "should set #price to 0 when #sellable doesn't have a price" do
     @sellable = Product.new
     @line_item = MerchantSidekick::LineItem.new(:sellable => @sellable)
     @line_item.amount.should == 0.to_money
   end
-  
+
   it "should return sellable when calling #sellable=" do
     @sellable = Product.new(:title => "Rad New Widget", :price => 10.to_money)
     @line_item = MerchantSidekick::LineItem.new
     sellable = @line_item.sellable=(@sellable)
     sellable.should === @sellable
   end
-  
+
   it "should save" do
     lambda {
       @product = Product.new(:price => 10.to_money, :title => "Pack of Candles")
@@ -61,5 +61,5 @@ describe MerchantSidekick::LineItem, "a new line item" do
       @line_item.amount.should == Money.new(1000, "USD")
     }.should change(MerchantSidekick::LineItem, :count)
   end
-  
+
 end

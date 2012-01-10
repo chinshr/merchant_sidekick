@@ -23,14 +23,14 @@ describe MerchantSidekick::PurchaseInvoice do
       :sellable => @product
     )
     @invoice.line_items.push(@line_item)
-    
+
     @credit_card = valid_credit_card
   end
-  
+
   it "should authorize" do
     transaction do
-      lambda { 
-        payment = @invoice.authorize(@credit_card) 
+      lambda {
+        payment = @invoice.authorize(@credit_card)
         payment.should be_success
         payment.position.should == 1
         @invoice.current_state.should == :authorized
@@ -42,13 +42,13 @@ describe MerchantSidekick::PurchaseInvoice do
     transaction do
       authorization_payment = @invoice.authorize(@credit_card)
       authorization_payment.should be_success
-      lambda { 
-        capture_payment = @invoice.capture 
+      lambda {
+        capture_payment = @invoice.capture
         capture_payment.should be_success
       }.should change(MerchantSidekick::Payment, :count).by(1)
     end
   end
-  
+
   it "should not capture without authorization" do
     transaction do
       payment = @invoice.capture
@@ -56,23 +56,23 @@ describe MerchantSidekick::PurchaseInvoice do
       @invoice.should be_pending
     end
   end
-  
+
   it "should purchase" do
     transaction do
-      lambda { 
-        payment = @invoice.purchase(@credit_card) 
+      lambda {
+        payment = @invoice.purchase(@credit_card)
         payment.should be_success
         @invoice.should be_paid
       }.should change(MerchantSidekick::Payment, :count).by(1)
     end
   end
-  
+
 =begin
   it "should void an authorized payment"
     # bogus gateway does not void, refactor into remote
-  
+
   it "should refund with credit payment"
     # bogus gateway does not void, refactor into remote
 =end
-  
+
 end

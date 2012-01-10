@@ -8,11 +8,11 @@ describe MerchantSidekick::Order do
     @order      = orders(:sams_widget)
     @order.reload and @order.save
   end
-  
+
   it "should have line_items" do
     lambda { MerchantSidekick::Order.new.line_items.first }.should_not raise_error
   end
-  
+
   it "should calculate amount" do
     transaction do
       lambda {
@@ -24,7 +24,7 @@ describe MerchantSidekick::Order do
       }.should_not raise_error
     end
   end
-  
+
 end
 
 describe MerchantSidekick::Order, "with addresses" do
@@ -36,7 +36,7 @@ describe MerchantSidekick::Order, "with addresses" do
     @order = orders(:paid)
     @order.reload and @order.save
   end
-  
+
   it "should have billing, shipping and origin address" do
     transaction do
       @order.billing_address.should_not be_nil
@@ -47,24 +47,24 @@ describe MerchantSidekick::Order, "with addresses" do
 end
 
 describe "A new order" do
-  
+
   def setup
     @products   = [products(:widget), products(:knob)]
     @line_items = [line_items(:sams_widget), line_items(:sams_knob)]
     @order      = orders(:sams_widget)
     @order.reload and @order.save
   end
-  
+
   it "amount should equal sum of sellables price" do
     transaction do
       @order.net_amount.should == @products.inject(0.to_money) {|sum,p| sum + p.price}
     end
   end
-  
+
 end
 
 describe "A new order with purchases" do
-  
+
   def setup
     @user         = users(:sam)
     @sam_billing  = @user.create_billing_address(addresses(:sam_billing).content_attributes)
@@ -81,5 +81,5 @@ describe "A new order with purchases" do
       @order.should be_new_record
     end
   end
-  
+
 end

@@ -1,7 +1,7 @@
 require File.expand_path("../spec_helper", __FILE__)
 
 describe "A buyer's model" do
-  
+
   it "should be able to purchase" do
     BuyingUser.new.should respond_to(:purchase)
   end
@@ -9,11 +9,11 @@ describe "A buyer's model" do
   it "should be able to purchase" do
     BuyingUser.new.should respond_to(:purchase_from)
   end
-  
+
   it "should have many orders" do
     lambda { BuyingUser.new.orders(true).first }.should_not raise_error
   end
-  
+
   it "should have many invoices" do
     lambda { SellingUser.new.invoices(true).first }.should_not raise_error
   end
@@ -25,7 +25,7 @@ describe "A buyer's model" do
   it "should have many purchase invoices" do
     lambda { BuyingUser.new.purchase_invoices(true).first }.should_not raise_error
   end
-  
+
 end
 
 describe "A buyer purchasing a sellable" do
@@ -36,7 +36,7 @@ describe "A buyer purchasing a sellable" do
     @shipping = @user.create_shipping_address(addresses(:sam_shipping).content_attributes)
     @product = products(:widget)
   end
-  
+
   it "should create a new order" do
     transaction do
       lambda {
@@ -49,7 +49,7 @@ describe "A buyer purchasing a sellable" do
       }.should change(MerchantSidekick::Order, :count)
     end
   end
-  
+
   it "should add to buyers's orders" do
     transaction do
       order = @user.purchase(@product)
@@ -58,7 +58,7 @@ describe "A buyer purchasing a sellable" do
       order.buyer.should == @user
     end
   end
-  
+
   it "should create line items" do
     transaction do
       order = @user.purchase(@product)
@@ -66,14 +66,14 @@ describe "A buyer purchasing a sellable" do
       order.line_items.first.sellable.should == @product
     end
   end
-  
+
   it "should set line item amount to sellable price" do
     transaction do
       order = @user.purchase @product
       order.line_items.first.amount.should == @product.price
     end
   end
-  
+
   it "should set line item amount to 0 if sellable does not have a price" do
     transaction do
       @product.price = 0
@@ -81,14 +81,14 @@ describe "A buyer purchasing a sellable" do
       order.line_items.first.amount.should == 0.to_money
     end
   end
-  
+
   it "should initialize but not save the order" do
     transaction do
       @order = @user.purchase @product
       @order.should be_new_record
     end
   end
-  
+
 end
 
 describe "A billable purchasing multiple sellables" do
@@ -101,13 +101,13 @@ describe "A billable purchasing multiple sellables" do
     @sam = users(:sam)
     @sam_billing = @sam.create_billing_address(addresses(:sam_billing).content_attributes)
     @sam_shipping = @sam.create_shipping_address(addresses(:sam_shipping).content_attributes)
-    
+
     @products = [products(:widget), products(:knob)]
     @order = @sam.purchase_from @sally, @products
   end
-  
+
   it "should create line items for each sellable" do
-    transaction do 
+    transaction do
       lambda { @order.save! }.should change(MerchantSidekick::LineItem, :count).by(2)
       @order.should have(2).line_items
       @order.line_items.collect(&:sellable).should == @products
@@ -123,7 +123,7 @@ describe "A billable purchasing a non-sellable model" do
     @billing = @user.create_billing_address(addresses(:sam_billing).content_attributes)
     @shipping = @user.create_shipping_address(addresses(:sam_shipping).content_attributes)
   end
-  
+
   it "should raise an error" do
     transaction do
       lambda { @user.purchase @user }.should raise_error(ArgumentError)

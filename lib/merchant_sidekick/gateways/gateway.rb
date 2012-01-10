@@ -9,12 +9,12 @@ module MerchantSidekick
   module Gateways
     class Gateway < ActiveRecord::Base
       self.table_name = "gateways"
-    
+
       cattr_accessor :gateway          # ->  caches gateway instance in decendants, e.g. in PaypalGateway.gateway
       cattr_accessor :default_gateway  # ->  sets default gateway as instance or class (symbol) optional
 
-      class << self 
-  
+      class << self
+
         def config_file_name
           "bogus_gateway.yml"
         end
@@ -26,27 +26,27 @@ module MerchantSidekick
         def default_gateway
           @@default_gateway || raise("No gateway defined in #{ENV['RAILS_ENV']} environment, e.g. MerchantSidekick::Gateway.default_gateway = :authorize_net_gateway")
         end
-    
+
         # Note: deprecate
         def gateway
           puts "DEPRECATED: use default_gateway"
           default_gateway
         end
-    
+
         # Note: deprecate=
         def gateway=(a_gateway)
           puts "DEPRECATED: use default_gateway="
           default_gateway=(a_gateway)
         end
-    
+
       end
-  
+
       # symbolizes name column string such as
       # e.g. 'authorize_net', 'Authorize Net', 'authorize.net' all to :authorize_net
       def service_name
         self[:name].gsub(/\.|,/, '_').gsub(/\s/, '').underscore.to_sym if self[:name]
       end
-  
+
       def config_file_name
         "#{self.service_name}.yml"
       end
@@ -56,7 +56,7 @@ module MerchantSidekick
       #   DB NAME column         Class Name              Config File Name        Service Name
       #   'authorize_net'        AuthorizeNetGateway     authorize_net.yml       :authorize_net
       #   'Authorize.net'        dito                    ...                     ...
-      # 
+      #
       # TODO should be refactored to 'instance'
       #
       def gateway
@@ -66,7 +66,7 @@ module MerchantSidekick
           self.class.gateway(self.config_file_name)
         end
       end
-    
+
     end
   end
 end

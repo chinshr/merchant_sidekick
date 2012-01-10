@@ -12,12 +12,12 @@ module MerchantSidekick
     has_many   :line_items, :class_name => "MerchantSidekick::LineItem"
     belongs_to :order, :class_name => "MerchantSidekick::Order"
     has_many   :payments, :as => :payable, :dependent => :destroy, :class_name => "MerchantSidekick::Payment"
-  
+
     money :net_amount,   :cents => :net_cents,   :currency => :currency
     money :tax_amount,   :cents => :tax_cents,   :currency => :currency
     money :gross_amount, :cents => :gross_cents, :currency => :currency
     has_address :origin, :billing, :shipping
-    
+
     #--- state machine
     aasm_initial_state :pending
     aasm :column => "status" do
@@ -55,7 +55,7 @@ module MerchantSidekick
         transitions :from => :authorized, :to => :authorized, :guard => :guard_transaction_declined_from_authorized
       end
     end
-    
+
     # state transition callbacks
     def enter_pending; end
     def enter_authorized; end
@@ -70,7 +70,7 @@ module MerchantSidekick
     def after_voided; end
     def after_refunded; end
     def after_payment_declined; end
-  
+
     # event guard callbacks
     def guard_transaction_declined_from_authorized; true; end
     def guard_transaction_declined_from_payment_declined; true; end
@@ -81,13 +81,13 @@ module MerchantSidekick
     def guard_payment_authorized_from_payment_declined; true; end
     def guard_payment_authorized_from_pending; true; end
     def guard_payment_paid_from_pending; true; end
-  
+
     #--- scopes
     scope :paid, where(:status => "paid")
-  
+
     #--- callbacks
     before_save :number
-  
+
     #--- instance methods
     alias_method :current_state, :aasm_current_state
 
@@ -99,11 +99,11 @@ module MerchantSidekick
     # you want to pass in the following additional options
     #
     #   :ip => ip address of the buyer
-    #   
+    #
     def payment_options(options={})
       {}.merge(options)
     end
-  
+
     # From payments, returns :credit_card, etc.
     def payment_type
       payments.first.payment_type if payments
@@ -117,10 +117,10 @@ module MerchantSidekick
     alias_method :payment_method_display, :payment_type_display
 
     # Net total amount
-    def net_total 
+    def net_total
       self.net_amount ||= line_items.inject(::Money.new(0, self.currency || ::Money.default_currency.iso_code)) {|sum,line| sum + line.net_amount}
     end
-  
+
     # Calculates tax and sets the tax_amount attribute
     # It adds tax_amount across all line_items
     def tax_total
@@ -132,7 +132,7 @@ module MerchantSidekick
     def gross_total
       self.gross_amount ||= self.net_total + self.tax_total
     end
-  
+
     # Same as gross_total
     def total
       self.gross_total
@@ -140,7 +140,7 @@ module MerchantSidekick
 
     # updates the order and all contained line_items after an address has changed
     # or an order item was added or removed. The order can only be evaluated if the
-    # created state is active. The order is saved if it is an existing order. 
+    # created state is active. The order is saved if it is an existing order.
     # Returns true if evaluation happend, false if not.
     def evaluate
       result = false
@@ -149,7 +149,7 @@ module MerchantSidekick
       result = save(false) unless self.new_record?
       result
     end
-  
+
     protected
 
     # override in subclass

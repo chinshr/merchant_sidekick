@@ -2,7 +2,7 @@ require File.expand_path("../spec_helper", __FILE__)
 
 describe MerchantSidekick::Addressable::Address, "should handle default columns" do
   it "should have default class attr columns assigned" do
-    MerchantSidekick::Addressable::Address.street_address_column.should == :street 
+    MerchantSidekick::Addressable::Address.street_address_column.should == :street
     MerchantSidekick::Addressable::Address.city_column.should == :city
     MerchantSidekick::Addressable::Address.postal_code_column.should == :postal_code
     MerchantSidekick::Addressable::Address.province_column.should  == :province
@@ -17,11 +17,11 @@ describe MerchantSidekick::Addressable::Address, "should handle default columns"
 end
 
 describe MerchantSidekick::Addressable::Address, "with address members" do
-  
+
   before(:each) do
     @address = MerchantSidekick::Addressable::Address.new(valid_address_attributes(:addressable => Addressable.create))
   end
-  
+
   it "should create an address" do
     @address.should_not == nil
     @address.first_name.should == "George"
@@ -29,8 +29,8 @@ describe MerchantSidekick::Addressable::Address, "with address members" do
     @address.middle_name.should == "W." if @address.middle_name?
     @address.last_name.should == "Bush"
     @address.lastname.should == "Bush"
-  end 
-  
+  end
+
   it "should handle street and address_line" do
     @address.street.should == "100 Washington St."
     @address.address_line_1.should == "100 Washington St."
@@ -47,7 +47,7 @@ describe MerchantSidekick::Addressable::Address, "with address members" do
     @address.street = ''
     @address.address_line_1 = "100 Enterprise Way"
     @address.address_line_2 = "Office Square 15"
-    
+
     @address.address_line_1.should == "100 Enterprise Way"
     @address.address_line_2.should == "Office Square 15"
     @address.street.should == "100 Enterprise Way\nOffice Square 15"
@@ -60,7 +60,7 @@ describe MerchantSidekick::Addressable::Address, "with address members" do
       @address.name.should == "George Bush"
     end
   end
-  
+
   it "should have a valid salutation and name" do
     if @address.middle_name?
       @address.salutation_and_name.should  == "Mr George W. Bush"
@@ -72,7 +72,7 @@ describe MerchantSidekick::Addressable::Address, "with address members" do
   it "should stringify address fields" do
     # full
     @address.to_s.should == "George Bush, 100 Washington St., Santa Cruz, California, 95065, United States of America"
-    
+
     # sparse
     @address = MerchantSidekick::Addressable::Address.new(
       :street        => "100 Sunshine Blvd.",
@@ -83,16 +83,16 @@ describe MerchantSidekick::Addressable::Address, "with address members" do
     )
     @address.to_s.should == "100 Sunshine Blvd., Scotts Valley, CA, 95066, US"
   end
-  
+
   it "should return a name" do
     @address.name.should == 'George Bush'
-  end  
-  
+  end
+
   it "should return nil if names are nil" do
     @address = MerchantSidekick::Addressable::Address.new
     @address.name.should be_nil
   end
-  
+
   it "should convert to active merchant address attributes" do
     @address = MerchantSidekick::Addressable::Address.new(valid_address_attributes(
       :addressable => Addressable.create,
@@ -108,7 +108,7 @@ describe MerchantSidekick::Addressable::Address, "with address members" do
     merchant[:zip].should == "95065"
     merchant[:phone].should == "+1 831 123-4567"
   end
-  
+
   it "should work with gender" do
     @address.should be_gender  # funny :-)
     @address.gender = :male
@@ -121,21 +121,21 @@ describe MerchantSidekick::Addressable::Address, "with address members" do
     @address.gender = 'f'
     @address.gender.should == 'f'
   end
-  
+
   it "should return a province or a province code" do
     address = MerchantSidekick::Addressable::Address.new(:province => "California", :province_code => "CA" )
     address.province_or_province_code.should == "California"
-    
+
     address = MerchantSidekick::Addressable::Address.new(:province_code => "CA" )
     address.province_or_province_code.should == "CA"
-    
+
     address = MerchantSidekick::Addressable::Address.new(:province => "", :province_code => "CA" )
     address.province_or_province_code.should == "CA"
-    
+
     address = MerchantSidekick::Addressable::Address.new
     address.province_or_province_code.should be_nil
   end
-  
+
   it "should return a country or a country code" do
     address = MerchantSidekick::Addressable::Address.new(:country => 'Germany', :country_code => 'DE')
     address.country_or_country_code.should == "Germany"
@@ -149,5 +149,5 @@ describe MerchantSidekick::Addressable::Address, "with address members" do
     address = MerchantSidekick::Addressable::Address.new
     address.country_or_country_code.should be_nil
   end
-  
+
 end
