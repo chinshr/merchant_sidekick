@@ -7,7 +7,7 @@ MerchantSidekick is a light-weight E-commerce framework for Ruby on Rails applic
 MerchantSidekick includes in- and outbound order management and invoicing, 
 a shopping cart, taxation and payment processing. It integrates with 
 [ActiveMerchant](http://activemerchant.org) for payment processing by default.
-The plugin can be extended to use other payment gateways outside the scope
+The plugin can be extended to use other payment processors outside the scope
 of ActiveMerchant.
 
 ## Quickstart
@@ -20,7 +20,7 @@ of ActiveMerchant.
 
     gem "merchant_sidekick"
 
-    rails generate merchant_sidekick
+    rails generate merchant_sidekick:install
 
     rake db:migrate
 
