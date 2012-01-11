@@ -95,8 +95,8 @@ module MerchantSidekick #:nodoc:
             :dependent => :destroy
 
             class_eval(<<-END, __FILE__, __LINE__+1)
-              def build_#{attribute}_address_with_addressable(options={})
-                build_#{attribute}_address_without_addressable(options.merge(:addressable => self))
+              def build_#{attribute}_address_with_addressable(attributes={}, options={})
+                build_#{attribute}_address_without_addressable(attributes.merge(:addressable => self), options)
               end
               alias_method_chain :build_#{attribute}_address, :addressable
 
