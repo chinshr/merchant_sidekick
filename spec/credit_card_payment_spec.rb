@@ -3,10 +3,10 @@ require File.expand_path("../spec_helper", __FILE__)
 describe MerchantSidekick::ActiveMerchant::CreditCardPayment, "gateway" do
 
   before(:each) do
-    MerchantSidekick::Gateways::Gateway.config                  = nil
-    MerchantSidekick::Gateways::Gateway.gateway                 = nil
+    MerchantSidekick::Gateway.config                            = nil
+    MerchantSidekick::Gateway.gateway                           = nil
+    MerchantSidekick::Gateway.default_gateway                   = nil
     MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway = nil
-    MerchantSidekick::Gateways::Gateway.default_gateway         = nil
   end
   
   it "should assign an active merchant gateway instance" do
@@ -25,18 +25,18 @@ describe MerchantSidekick::ActiveMerchant::CreditCardPayment, "gateway" do
   end
 
   it "should return active merchant gateway assigned as merchant sidekick default gateway" do
-    MerchantSidekick::Gateways::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new
+    MerchantSidekick::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new
     MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway.should be_instance_of(::ActiveMerchant::Billing::BogusGateway)
   end
   
   after(:each) do
-    MerchantSidekick::Gateways::Gateway.config                  = nil
-    MerchantSidekick::Gateways::Gateway.gateway                 = nil
+    MerchantSidekick::Gateway.config                            = nil
+    MerchantSidekick::Gateway.gateway                           = nil
     MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway = nil
   end
 
   after(:all) do
-    MerchantSidekick::Gateways::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new
+    MerchantSidekick::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new
   end
 
 end

@@ -33,10 +33,10 @@ module MerchantSidekick
           if @@gateway.is_a? ::ActiveMerchant::Billing::Gateway
             @@gateway
           elsif @@gateway.is_a? Symbol
-            @@gateway = "::MerchantSidekick::Gateways::#{@@gateway.to_s.classify}".constantize.gateway
+            @@gateway = "::MerchantSidekick::ActiveMerchant::Gateways::#{@@gateway.to_s.classify}".constantize.gateway
             @@gateway
           else
-            @@gateway = MerchantSidekick::Gateways::Gateway.default_gateway
+            @@gateway = MerchantSidekick::Gateway.default_gateway
           end
         end
 

@@ -32,11 +32,11 @@ ActiveRecord::Base.send(:include, MerchantSidekick::Seller)
 require 'merchant_sidekick/shopping_cart/cart'
 require 'merchant_sidekick/shopping_cart/line_item'
 
-require 'merchant_sidekick/gateways/gateway'
-require 'merchant_sidekick/gateways/authorize_net_gateway'
-require 'merchant_sidekick/gateways/paypal_gateway'
-
+require 'merchant_sidekick/gateway'
 require 'merchant_sidekick/payment'
+
 require 'merchant_sidekick/active_merchant/credit_card_payment'
+require 'merchant_sidekick/active_merchant/gateways/authorize_net_gateway'
+require 'merchant_sidekick/active_merchant/gateways/paypal_gateway'
 
 require 'merchant_sidekick/railtie' if defined?(Rails)
