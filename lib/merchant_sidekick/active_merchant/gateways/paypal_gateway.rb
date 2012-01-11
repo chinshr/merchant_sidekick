@@ -11,7 +11,7 @@
 module MerchantSidekick
   module ActiveMerchant
     module Gateways
-      class PaypalGateway < MerchantSidekick::Gateway
+      class PaypalGateway < ::MerchantSidekick::ActiveMerchant::Gateways::Base
         class << self
 
           # Returns an active merchant paypal gateway instance

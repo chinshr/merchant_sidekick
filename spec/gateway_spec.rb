@@ -66,7 +66,8 @@ describe MerchantSidekick::ActiveMerchant::Gateways::AuthorizeNetGateway do
   end
 
   it "should return active merchant gateway instance for default_gateway type" do
-    MerchantSidekick::Gateway.default_gateway = :authorize_net_gateway
+    MerchantSidekick::default_gateway = :authorize_net_gateway
+    MerchantSidekick::default_gateway.should be_instance_of(::ActiveMerchant::Billing::AuthorizeNetGateway)
     MerchantSidekick::Gateway.default_gateway.should be_instance_of(::ActiveMerchant::Billing::AuthorizeNetGateway)
   end
 
@@ -97,7 +98,8 @@ describe MerchantSidekick::ActiveMerchant::Gateways::PaypalGateway do
   end
   
   it "should return active merchant gateway instance for default_gateway type" do
-    MerchantSidekick::Gateway.default_gateway = :paypal_gateway
+    MerchantSidekick::default_gateway = :paypal_gateway
+    MerchantSidekick::default_gateway.should be_instance_of(::ActiveMerchant::Billing::PaypalGateway)
     MerchantSidekick::Gateway.default_gateway.should be_instance_of(::ActiveMerchant::Billing::PaypalGateway)
   end
 

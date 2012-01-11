@@ -1,5 +1,16 @@
 # Base class for all merchant sidekick gateway implementations.
 module MerchantSidekick
+  
+  class << self
+    def default_gateway
+      MerchantSidekick::Gateway.default_gateway
+    end
+    
+    def default_gateway=(value)
+      MerchantSidekick::Gateway.default_gateway = value
+    end
+  end
+  
   class Gateway
     cattr_accessor :config_path
     cattr_accessor :config_file_name
@@ -62,13 +73,7 @@ module MerchantSidekick
       end
 
       def default_gateway
-        if @@default_gateway.is_a? ::ActiveMerchant::Billing::Gateway
-          @@default_gateway
-        elsif @@default_gateway.is_a?(Symbol)
-          @@default_gateway = "::MerchantSidekick::ActiveMerchant::Gateways::#{@@default_gateway.to_s.classify}".constantize.gateway
-        elsif @@default_gateway.is_a?(NilClass)
-          raise("No gateway instance assigned, try e.g. MerchantSidekick::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new")
-        end
+        @@default_gateway || raise("No gateway instance assigned, try e.g. MerchantSidekick::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new")
       end
 
     end

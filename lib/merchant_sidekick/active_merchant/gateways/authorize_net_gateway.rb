@@ -2,7 +2,7 @@
 module MerchantSidekick
   module ActiveMerchant
     module Gateways
-      class AuthorizeNetGateway < MerchantSidekick::Gateway
+      class AuthorizeNetGateway < ::MerchantSidekick::ActiveMerchant::Gateways::Base
         class << self
 
           # Returns an active merchant authorize net gateway instance 
