@@ -8,6 +8,7 @@
 * Fix authorize\_net\_gateway and paypal_gateway merchant gateways
 * Refactored out active_merchant specific gateways into separate module
 * Removed option to load gateway configuration from database
+* Added gateway spec
 
 ## 0.4.0 (2011-12-27)
 
