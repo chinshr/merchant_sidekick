@@ -1,0 +1,10 @@
+test:
+  authorize_net_gateway:
+    login_id: foo
+    transaction_key: bar
+    mode: test
+  paypal_gateway:
+    api_username: seller_XYZ_biz_api1.example.com
+    api_password: ABCDEFG123456789
+    signature: AsPC9BjkCyDFQXbStoZcgqH3hpacAX3IenGazd35.nEnXJKR9nfCmJDu
+    mode: test

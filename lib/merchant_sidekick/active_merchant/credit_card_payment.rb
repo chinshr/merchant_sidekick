@@ -7,74 +7,86 @@ module MerchantSidekick
 
       class << self
 
-        # returns active merchant gateway, based on
+        # Returns an active merchant gateway instance, based on the following:
         #
-        #   * an active merchant gateway was assigned to gateway class accessor
-        #   * a gateway implementation identifier, like :authorize_net_gateway was passed
-        #     into the gateway class accessor
+        #   * an active merchant gateway instance assigned to the gateway
+        #     class accessor
+        #   * a merchant sidekick specific gateway identifier, 
+        #     e.g. :authorize_net_gateway, is passed into the gateway class accessor
+        #   * otherwise falls back to the default gateway assigned as
+        #     MerchantSidekick::Gateways::Gateway.default_gateway
         #
-        # override or define this as needed in environment like:
+        # Declare as needed in the environment.
+        #
+        # E.g.
+        #
+        #   CreditCardPayment.gateway = ActiveMerchant::Billing::AuthorizeNetGateway.new({
+        #     :login    => @login_id,
+        #     :password => @transaction_key
+        #   })
+        #
+        #   or
         #
         #   CreditCardPayment.gateway = :authorize_net_gateway
         #
         def gateway
-          if @@gateway
-            # return ActiveMerchant gateway instance
-            return @@gateway if @@gateway.is_a? ::ActiveMerchant::Billing::Gateway
-            # or get the ActiveMerchant gateway instance through Merchant Sidekick's gateway
-            # e.g. :authorize_net_gateway -> AuthorizeNetGateway.gateway
-            @@gateway = @@gateway.to_s.classify.constantize.gateway
+          if @@gateway.is_a? ::ActiveMerchant::Billing::Gateway
+            @@gateway
+          elsif @@gateway.is_a? Symbol
+            @@gateway = "::MerchantSidekick::Gateways::#{@@gateway.to_s.classify}".constantize.gateway
+            @@gateway
           else
             @@gateway = MerchantSidekick::Gateways::Gateway.default_gateway
           end
         end
 
         def authorize(amount, credit_card, options = {})
-          process('authorization', amount) do |gw|
+          process('authorization', amount, options) do |gw|
             gw.authorize(amount.cents, credit_card, options)
           end
         end
 
         def capture(amount, authorization, options = {})
-          process('capture', amount) do |gw|
+          process('capture', amount, options) do |gw|
             gw.capture(amount.cents, authorization, options)
           end
         end
 
         def purchase(amount, credit_card, options = {})
-          process('purchase', amount) do |gw|
+          process('purchase', amount, options) do |gw|
             gw.purchase(amount.cents, credit_card, options)
           end
         end
 
         def void(amount, authorization, options = {})
-          process('void', amount) do |gw|
+          process('void', amount, options) do |gw|
             gw.void(authorization, options)
           end
         end
 
         # requires :card_number option
         def credit(amount, authorization, options = {})
-          process('credit', amount) do |gw|
+          process('credit', amount, options) do |gw|
             gw.credit(amount.cents, authorization, options)
           end
         end
 
         # works with paypal payflow
         def transfer(amount, destination_account, options={})
-          process('transfer', amount) do |gw|
+          process('transfer', amount, options) do |gw|
             gw.transfer(amount.cents, destination_account, options)
           end
         end
 
         private
 
-        def process(action, amount = nil)
+        def process(action, amount = nil, options = {})
           result = CreditCardPayment.new
           result.amount = amount
           result.action = action
 
           begin
+            options[:currency] = amount.currency if amount.respond_to?(:currency)
             response = yield gateway
 
             result.success   = response.success?

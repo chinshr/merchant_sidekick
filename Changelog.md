@@ -5,6 +5,7 @@
 * Fix overridden `build_#{relation}` method signature
 * Fix deprecations on class\_inheritable\_writer
 * Fix deprecations when using Money class with ActiveMerchant
+* Fix authorize\_net\_gateway and paypal\_gateway merchant gateways
 
 ## 0.4.0 (2011-12-27)
 

@@ -1,5 +1,46 @@
 require File.expand_path("../spec_helper", __FILE__)
 
+describe MerchantSidekick::ActiveMerchant::CreditCardPayment, "gateway" do
+
+  before(:each) do
+    MerchantSidekick::Gateways::Gateway.config                  = nil
+    MerchantSidekick::Gateways::Gateway.gateway                 = nil
+    MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway = nil
+    MerchantSidekick::Gateways::Gateway.default_gateway         = nil
+  end
+  
+  it "should assign an active merchant gateway instance" do
+    MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway = ActiveMerchant::Billing::BogusGateway.new
+    MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway.should be_instance_of(::ActiveMerchant::Billing::BogusGateway)
+  end
+
+  it "should return active merchant gateway instance using merchant sidekick gateway type authorize_net_gateway" do
+    MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway = :authorize_net_gateway
+    MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway.should be_instance_of(::ActiveMerchant::Billing::AuthorizeNetGateway)
+  end
+
+  it "should return active merchant gateway instance using merchant sidekick gateway type paypal_gateway" do
+    MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway = :paypal_gateway
+    MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway.should be_instance_of(::ActiveMerchant::Billing::PaypalGateway)
+  end
+
+  it "should return active merchant gateway assigned as merchant sidekick default gateway" do
+    MerchantSidekick::Gateways::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new
+    MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway.should be_instance_of(::ActiveMerchant::Billing::BogusGateway)
+  end
+  
+  after(:each) do
+    MerchantSidekick::Gateways::Gateway.config                  = nil
+    MerchantSidekick::Gateways::Gateway.gateway                 = nil
+    MerchantSidekick::ActiveMerchant::CreditCardPayment.gateway = nil
+  end
+
+  after(:all) do
+    MerchantSidekick::Gateways::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new
+  end
+
+end
+
 describe MerchantSidekick::ActiveMerchant::CreditCardPayment, "authorization" do
 
   def setup

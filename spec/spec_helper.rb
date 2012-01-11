@@ -8,13 +8,22 @@ require "merchant_sidekick"
 RSpec.configure do |config|
 #  config.use_transactional_fixtures = true
 #  config.use_instantiated_fixtures  = false
-#  config.fixture_path = File.dirname(__FILE__) + '/fixtures'
+#  config.fixture_path               = File.dirname(__FILE__) + '/fixtures'
 end
 
 # If you want to see the ActiveRecord log, invoke the tests using `rake test LOG=true`
 if ENV["LOG"]
   require "logger"
   ActiveRecord::Base.logger = Logger.new($stdout)
+end
+
+# Provide basic Rails methods for testing purposes
+unless defined?(Rails)
+  module Rails
+    extend self
+    def env; "test"; end
+    def root; Pathname.new(File.expand_path("..", __FILE__)); end
+  end
 end
 
 ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
