@@ -1,10 +1,6 @@
 # Base class for all merchant sidekick gateway implementations.
 module MerchantSidekick
-  class Gateway < ActiveRecord::Base
-    self.table_name = "gateways"
-
-    cattr_accessor :source           # -> set to :db or :yaml
-    @@source = :yaml
+  class Gateway
     cattr_accessor :config_path
     cattr_accessor :config_file_name
     @@config_file_name = "merchant_sidekick.yml"
@@ -70,32 +66,5 @@ module MerchantSidekick
       end
 
     end
-
-    # symbolizes name column string such as
-    # e.g. 'authorize_net', 'Authorize Net', 'authorize.net' all to :authorize_net
-    def service_name
-      self[:name].gsub(/\.|,/, '_').gsub(/\s/, '').underscore.to_sym if self[:name]
-    end
-
-    def config_file_name
-      "#{self.service_name}.yml"
-    end
-
-    # returns the gateway instance specified by name stored in the DB, where:
-    #
-    #   DB NAME column         Class Name              Config File Name        Service Name
-    #   'authorize_net'        AuthorizeNetGateway     authorize_net.yml       :authorize_net
-    #   'Authorize.net'        dito                    ...                     ...
-    #
-    # TODO should be refactored to 'instance'
-    #
-    def gateway
-      begin
-        "#{self.service_name}Gateway".classify.gateway(self.config_file_name)
-      rescue
-        self.class.gateway(self.config_file_name)
-      end
-    end
-
   end
 end

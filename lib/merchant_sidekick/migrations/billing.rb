@@ -88,20 +88,6 @@ class CreateMerchantSidekickBillingTables < ActiveRecord::Migration
     add_index :payments, "position"
     add_index :payments, "reference"
     add_index :payments, "uuid"
-
-
-    #--- gateways
-    create_table :gateways do |t|
-      t.string "name",            :null => false
-      t.string "mode"
-      t.string "type"
-      t.string "login_id"
-      t.string "transaction_key"
-      t.timestamps
-    end
-    add_index :gateways, "name"
-    add_index :gateways, "type"
-
   end
 
   def self.down
