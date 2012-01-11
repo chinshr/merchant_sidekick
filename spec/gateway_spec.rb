@@ -35,6 +35,10 @@ describe MerchantSidekick::Gateway do
   it "should read from default config" do
     MerchantSidekick::Gateway.config.should be_instance_of(Hash)
   end
+  
+  it "should throw a runtime error on unassigned default gateway" do
+    lambda {MerchantSidekick::Gateway.default_gateway}.should raise_error(RuntimeError)
+  end
 
   after(:all) do
     MerchantSidekick::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new
@@ -49,6 +53,7 @@ describe MerchantSidekick::ActiveMerchant::Gateways::AuthorizeNetGateway do
     MerchantSidekick::Gateway.default_gateway  = nil
     MerchantSidekick::Gateway.config           = nil
     MerchantSidekick::Gateway.config_path      = nil
+    MerchantSidekick::Gateway.gateway         = nil
   end
 
   it "should read config" do
@@ -58,6 +63,11 @@ describe MerchantSidekick::ActiveMerchant::Gateways::AuthorizeNetGateway do
 
   it "should return active merchant authorize_net gateway instance" do
     MerchantSidekick::ActiveMerchant::Gateways::AuthorizeNetGateway.gateway.should be_instance_of(::ActiveMerchant::Billing::AuthorizeNetGateway)
+  end
+
+  it "should return active merchant gateway instance for default_gateway type" do
+    MerchantSidekick::Gateway.default_gateway = :authorize_net_gateway
+    MerchantSidekick::Gateway.default_gateway.should be_instance_of(::ActiveMerchant::Billing::AuthorizeNetGateway)
   end
 
   after(:all) do
@@ -84,6 +94,11 @@ describe MerchantSidekick::ActiveMerchant::Gateways::PaypalGateway do
 
   it "should return active merchant paypal gateway instance" do
     MerchantSidekick::ActiveMerchant::Gateways::PaypalGateway.gateway.should be_instance_of(::ActiveMerchant::Billing::PaypalGateway)
+  end
+  
+  it "should return active merchant gateway instance for default_gateway type" do
+    MerchantSidekick::Gateway.default_gateway = :paypal_gateway
+    MerchantSidekick::Gateway.default_gateway.should be_instance_of(::ActiveMerchant::Billing::PaypalGateway)
   end
 
   after(:all) do

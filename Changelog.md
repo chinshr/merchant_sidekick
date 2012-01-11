@@ -9,6 +9,7 @@
 * Refactored out active_merchant specific gateways into separate module
 * Removed option to load gateway configuration from database
 * Added gateway spec
+* Allow for MerchantSidekick::Gateway.default_gateway to use type name
 
 ## 0.4.0 (2011-12-27)
 

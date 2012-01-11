@@ -62,7 +62,13 @@ module MerchantSidekick
       end
 
       def default_gateway
-        @@default_gateway || raise("No gateway instance assigned, e.g. MerchantSidekick::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new")
+        if @@default_gateway.is_a? ::ActiveMerchant::Billing::Gateway
+          @@default_gateway
+        elsif @@default_gateway.is_a?(Symbol)
+          @@default_gateway = "::MerchantSidekick::ActiveMerchant::Gateways::#{@@default_gateway.to_s.classify}".constantize.gateway
+        elsif @@default_gateway.is_a?(NilClass)
+          raise("No gateway instance assigned, try e.g. MerchantSidekick::Gateway.default_gateway = ActiveMerchant::Billing::BogusGateway.new")
+        end
       end
 
     end
