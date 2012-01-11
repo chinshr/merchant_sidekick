@@ -1,13 +1,5 @@
-# Implements the Paypal Website Payments Pro specific gateway configuration
-#
-# development:
-#   api_username: seller_xyz_biz_api1.example.com
-#   api_password: DMLxxx
-#   pem_file_name: dev_cert.txt
-#   signature: Aiadlsfsdfdlsfjklsdjf;lasdjfkljsdf;ljlk
-#   mode: test
-#  ...
-#
+# Implements the Paypal Website Payments Pro specific active merchant gateway wrapper
+# to configure the gateway properly.
 module MerchantSidekick
   module ActiveMerchant
     module Gateways

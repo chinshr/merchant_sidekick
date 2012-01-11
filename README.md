@@ -24,6 +24,9 @@ of ActiveMerchant.
 
     rake db:migrate
 
+    # edit config/initializers/merchant_sidekick.rb
+    MerchantSidekick::default_gateway = :bogus_gateway
+    
     # edit app/models/user.rb
     class User < ActiveRecord::Base
       acts_as_buyer

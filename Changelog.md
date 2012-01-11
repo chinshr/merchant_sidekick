@@ -11,6 +11,7 @@
 * Added gateway spec
 * Allow for MerchantSidekick::Gateway.default_gateway to use type name
 * Refactored default_gateway for active merchant gateway types into base class
+* Added bogus gateway configuration wrapper
 
 ## 0.4.0 (2011-12-27)
 

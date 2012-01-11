@@ -1,4 +1,5 @@
-# Implements the authorize.net specific gateway configuration
+# Implements the AuthorizeNet specific active merchant gateway wrapper
+# to configure the gateway properly.
 module MerchantSidekick
   module ActiveMerchant
     module Gateways
