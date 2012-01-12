@@ -27,7 +27,6 @@ describe MerchantSidekick::ShoppingCart::LineItem do
     transaction do
       product = ProductWithNameAndSku.new(:price => Money.new(999, "USD"))
       item = MerchantSidekick::ShoppingCart::LineItem.new(valid_cart_line_item_attributes(:product => product))
-      # item.name.should == "A beautiful name" # TODO fix attribute priority
       item.item_number.should == "PR1234"
       item.description.should == "Wonderful name!"
     end

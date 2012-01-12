@@ -54,6 +54,6 @@ module MerchantSidekick
     end
   end
 
-  # MerchantSidekick::Payments::AuthorizationError
+  # MerchantSidekick::AuthorizationError
   class AuthorizationError < StandardError; end
 end

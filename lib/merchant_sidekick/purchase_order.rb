@@ -306,7 +306,7 @@ module MerchantSidekick
 
     # Builds billing, shipping and origin addresses
     def build_addresses(options={})
-      raise ArgumentError.new("No address declared for buyer (#{buyer.class.name} ##{buyer.id}), use acts_as_addressable :billing") \
+      raise ArgumentError.new("No address declared for buyer (#{buyer.class.name} ##{buyer.id}), use e.g. class #{buyer.class.name}; has_address; end") \
         unless buyer.respond_to?(:find_default_address)
 
       # buyer's billing or default address
@@ -318,7 +318,7 @@ module MerchantSidekick
             self.build_billing_address(buyer_default_address.content_attributes)
           else
             raise ArgumentError.new(
-              "No billing or default address for buyer (#{buyer.class.name} ##{buyer.id}) use acts_as_addressable")
+              "No billing or default address for buyer (#{buyer.class.name} ##{buyer.id}), use e.g. class #{buyer.class.name}; has_address :billing; end")
           end
         end
       end

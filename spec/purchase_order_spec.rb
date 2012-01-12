@@ -80,136 +80,78 @@ describe "authorize with a valid credit card" do
 
 end
 
-=begin
 describe "Deleting an order" do
-  fixtures :orders, :line_items
-
+  def setup
+    @widget    = products(:widget)
+    @knob      = products(:knob)
+    @li_widget = line_items(:sams_widget)
+    @li_knob   = line_items(:sams_knob)
+    @order     = orders(:sams_widget)
+    @order.reload
+  end
+  
   it "should delete associated line items" do
-    orders(:sams_widget).destroy
-    lambda { LineItem.find(line_items(:sams_widget).id) }.should raise_error(ActiveRecord::RecordNotFound)
+    transaction do
+      @order.line_items.count.should == 2
+      @order.destroy
+      @order.line_items.count.should == 0
+    end
   end
 end
 
-describe "Canceling an order" do
-  fixtures :orders, :line_items
-
-  before(:each) do
-    @order = orders(:sams_widget)
+describe "Cancelling an order" do
+  def setup
+    @widget    = products(:widget)
+    @knob      = products(:knob)
+    @li_widget = line_items(:sams_widget)
+    @li_knob   = line_items(:sams_knob)
+    @order     = orders(:sams_widget)
+    @order.reload
   end
-
-  it "should record the date the order was canceled" do
-    @order.canceled_at.should be_nil
-    @order.cancel!
-    @order.canceled_at.should_not be_nil
+  
+  it "should record that order was cancelled" do
+    transaction do
+      @order.canceled_at.should be_nil
+      @order.current_state.should == :created
+      @order.cancel!
+      @order.current_state.should == :canceled
+    end
   end
 end
 
 describe "Paying an order with an invalid credit card" do
-  fixtures :orders
-
-  before(:each) do
-    @order = orders(:unpaid)
-    @credit_card = ActiveMerchant::Billing::CreditCard.new valid_credit_card_attrs(:number => "2")
+  def setup
+    @buyer        = users(:sam)
+    @sam_billing  = @buyer.create_billing_address(addresses(:sam_billing).content_attributes)
+    @sam_shipping = @buyer.create_shipping_address(addresses(:sam_shipping).content_attributes)
+    @order        = orders(:unpaid)
+    @credit_card  = ActiveMerchant::Billing::CreditCard.new valid_credit_card_attributes(:number => "2")
+    @order.reload
     mock_gateway(false, @order, @credit_card)
   end
 
-  it "should raise AuthorizationError" do
-    lambda { @order.pay(@credit_card) }.should raise_error(Payment::AuthorizationError)
+  it "should return an unsuccessful payment" do
+    transaction do
+      payment = @order.pay(@credit_card)
+      payment.action.should == "purchase"
+      payment.success.should == false
+      payment.should_not be_new_record
+    end
   end
-end
-
-describe "Paying an order with additional options" do
-  fixtures :orders
-
-  before(:each) do
-    @order = orders(:unpaid)
-    @credit_card = mock("credit card")
-    @credit_card.stub!(:number).and_return("1")
-  end
-
-  it "should pass options to gateway" do
-    @options = { :ip => '10.0.0.1' }
-    mock_gateway(true, @order, @credit_card, @options)
-    @order.pay(@credit_card, @options).amount.should == @order.amount
-  end
-end
-
-describe "Paying an order with a billing address" do
-  fixtures :orders
-
-  before(:each) do
-    @order = orders(:unpaid)
-    @credit_card = mock("credit card")
-    @credit_card.stub!(:number).and_return("1")
-    @address = Address.new(
-      :name => "Test Person",
-      :street1 => "123 ABC Street",
-      :locality => "Somewhere",
-      :region => "NA",
-      :postal_code => "12345",
-      :country => "USA"
-    )
-    mock_gateway(true, @order, @credit_card, :billing_address => @address)
-  end
-
-  it "should save address" do
-    lambda { @order.pay(@credit_card, :billing_address => @address) }.should change(Address, :count).by(1)
-  end
-
-end
-
-describe "Authorizing a payment" do
-  fixtures :orders
-
-  before(:each) do
-    @order = orders(:unpaid)
-    @credit_card = mock("credit card")
-    @credit_card.stub!(:number).and_return("1")
-    mock_gateway_authorization(true, @order, @credit_card)
-  end
-
-  def authorize
-    @order.authorize(@credit_card)
-  end
-
-  it "should return a payment" do
-    authorize.should be_instance_of(Payment)
-  end
-
-  it "should set authorization number" do
-    authorize.confirmation.should_not be_nil
-  end
-
-end
-
-def mock_gateway_authorization(success, order, credit_card, options ={})
-  @response = mock("response")
-  @response.should_receive(:success?).and_return(success)
-  if success
-    @response.should_receive(:authorization).and_return("12345")
-  else
-    @response.should_receive(:message).and_return("Invalid credit card number")
-  end
-
-  @gateway = mock("gateway")
-  @gateway.should_receive(:authorize).with(order.amount, credit_card,
-    {:order_id => order.id, :customer => order.billable_id}.merge(options)).and_return(@response)
-  ActiveMerchant::Billing::Base.stub!(:default_gateway).and_return(@gateway)
 end
 
 def mock_gateway(success, order, credit_card, options = {})
   @gateway = mock("gateway")
   @response = mock("response")
-  @response.should_receive(:success?).and_return(success)
+  @response.stub!(:success?).and_return(success)
   if success
     @response.should_receive(:authorization).and_return("12345")
   else
-    @response.should_receive(:message).and_return("Invalid credit card number")
+    @response.stub!(:message).and_return("Invalid credit card number")
   end
 
-  @gateway.should_receive(:purchase).with(order.amount, credit_card, {:order_id => order.id,
-    :customer => order.billable_id}.merge(options)).and_return(@response)
+  @gateway.stub!(:purchase).with(order.gross_total, credit_card, {
+    :buyer => order.buyer}.merge(options)).and_return(@response)
 
   ActiveMerchant::Billing::Base.stub!(:default_gateway).and_return(@gateway)
 end
-=end

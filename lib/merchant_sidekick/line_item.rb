@@ -121,7 +121,7 @@ module MerchantSidekick
     end
 
     def save_sellable
-      sellable.save if sellable.new_record?
+      sellable.save if sellable && sellable.new_record?
     end
 
   end

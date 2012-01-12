@@ -12,6 +12,7 @@ paid:
   id: 2
   buyer_id: 1
   buyer_type: BuyingUser
+  type: MerchantSidekick::PurchaseOrder
 unpaid:
   id: 3
   buyer_id: 1
@@ -20,4 +21,4 @@ unpaid:
   tax_cents: 0
   gross_cents: 12321
   currency: USD
-  
+  type: MerchantSidekick::PurchaseOrder  
