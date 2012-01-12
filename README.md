@@ -41,7 +41,8 @@ of ActiveMerchant.
 
     # edit app/controllers/orders_controller.rb
     class OrdersController < ApplicationController
-      # before_filter ...
+      before_filter load_cart
+      ...
       
       def create
         @credit_card = ActiveMerchant::Billing::CreditCard.new(params[:credit_card] || {})
@@ -53,7 +54,13 @@ of ActiveMerchant.
         render :template => "new"
       end
       
-      # ...
+      protected
+      
+      def load_cart
+        @cart = YAML.load(session[:cart].to_s)
+      end
+      
+      ...
     
     end
     
