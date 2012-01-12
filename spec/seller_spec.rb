@@ -109,6 +109,44 @@ describe "A seller selling multiple products" do
   end
 end
 
+describe "A seller selling a cart" do
+
+  def setup
+    @sally          = users(:sally)
+    @sally_billing  = @sally.create_billing_address(addresses(:sally_billing).content_attributes)
+    @sally_shipping = @sally.create_shipping_address(addresses(:sally_shipping).content_attributes)
+    @sam            = users(:sam)
+    @sam_billing    = @sam.create_billing_address(addresses(:sam_billing).content_attributes)
+    @sam_shipping   = @sam.create_shipping_address(addresses(:sam_shipping).content_attributes)
+    @products       = [products(:widget), products(:knob)]
+    @order          = @sally.sell_to @sam, @products
+    @cart           = MerchantSidekick::ShoppingCart::Cart.new
+  end
+
+  it "should sell one cart" do
+    transaction do
+      @cart.add(@products)
+      @cart.total.to_s.should == "33.94"
+      order = @sally.sell_to @sam, @cart
+      order.total.to_s.should == "33.94"
+    end
+  end
+  
+  it "should sell multipe carts" do
+    transaction do
+      cart1 = MerchantSidekick::ShoppingCart::Cart.new
+      cart2 = MerchantSidekick::ShoppingCart::Cart.new
+      
+      cart1.add(@products.first)
+      cart2.add(@products.last)
+      order = @sally.sell_to @sam, cart1, cart2
+      order.total.to_s.should == "33.94"
+    end
+  end
+  
+end
+
+
 describe "A seller selling no product" do
 
   def setup

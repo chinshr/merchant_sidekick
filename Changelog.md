@@ -13,6 +13,7 @@
 * Refactored default_gateway for active merchant gateway types into base class
 * Added bogus gateway configuration wrapper
 * Cart instances can now be added directly to purchase
+* Cart instances can now be sold
 
 ## 0.4.0 (2011-12-27)
 

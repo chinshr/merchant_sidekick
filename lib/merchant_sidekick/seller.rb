@@ -53,9 +53,10 @@ module MerchantSidekick
           when 'Hash'
             options.merge! argument
           else
-            sellables << argument
+            sellables << (argument.is_a?(MerchantSidekick::ShoppingCart::Cart) ? argument.line_items : argument)
           end
         end
+        sellables.flatten!
 
         raise ArgumentError.new("No sellable (e.g. product) model provided") if sellables.empty?
         raise ArgumentError.new("Sellable models must have a :price") unless sellables.all? {|sellable| sellable.respond_to? :price}
