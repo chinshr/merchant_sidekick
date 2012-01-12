@@ -91,7 +91,7 @@ describe "A buyer purchasing a sellable" do
 
 end
 
-describe "A billable purchasing multiple sellables" do
+describe "A buyer purchasing multiple sellables" do
 
   def setup
     @sally = users(:sally)
@@ -110,13 +110,53 @@ describe "A billable purchasing multiple sellables" do
     transaction do
       lambda { @order.save! }.should change(MerchantSidekick::LineItem, :count).by(2)
       @order.should have(2).line_items
-      @order.line_items.collect(&:sellable).should == @products
+      @order.line_items.map(&:sellable).should == @products
     end
   end
 
 end
 
-describe "A billable purchasing a non-sellable model" do
+describe "A buyer purchasing from a cart" do
+
+  def setup
+    @sally = users(:sally)
+    @sally_billing = @sally.create_billing_address(addresses(:sally_billing).content_attributes)
+    @sally_shipping = @sally.create_shipping_address(addresses(:sally_shipping).content_attributes)
+
+    @sam = users(:sam)
+    @sam_billing = @sam.create_billing_address(addresses(:sam_billing).content_attributes)
+    @sam_shipping = @sam.create_shipping_address(addresses(:sam_shipping).content_attributes)
+
+    @products = [products(:widget), products(:knob)]
+    @order = @sam.purchase_from @sally, @products
+    
+    @cart = MerchantSidekick::ShoppingCart::Cart.new
+  end
+
+  it "should add line items for a shopping cart" do
+    transaction do
+      @cart.add(@products)
+      @cart.total.to_s.should == "33.94"
+      order = @sam.purchase @cart
+      order.total.to_s.should == "33.94"
+    end
+  end
+
+  it "should add multiple shopping carts" do
+    transaction do
+      cart1 = MerchantSidekick::ShoppingCart::Cart.new
+      cart2 = MerchantSidekick::ShoppingCart::Cart.new
+      
+      cart1.add @products.first
+      cart2.add @products.last
+      order = @sam.purchase cart1, cart2
+      order.total.to_s.should == "33.94"
+    end
+  end
+
+end
+
+describe "A buyer purchasing a non-sellable model" do
 
   def setup
     @user = users(:sam)

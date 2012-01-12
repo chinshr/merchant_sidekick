@@ -1,6 +1,16 @@
-# The Cart model is a non-persistant shopping cart. It provides methods
-# to add, remove "purchasables". It follows the model where purchasables are
-# not the actual products, but rather the product lines.
+# The Cart class implements a non-persistant shopping cart. 
+# It provides methods to add, remove and update "sellable" items. Each sellable
+# item added to the cart is converted to a cart line item. It is recommended 
+# to make use of the shopping cart's indirection of purchasing cart line items 
+# as products often change there properties, i.e. price, description, etc., as
+# shown in the following example:
+#
+#   Purchase w/ cart (recommended)      |  Simple purchase wo/ cart
+#   ------------------------------------+------------------------------------
+#   @cart = Cart.new                    |  @order = @buyer.purchase @products
+#   @cart.add @products                 |
+#   @order = @buyer.purchase @cart      |
+#
 module MerchantSidekick
   module ShoppingCart
     class Cart
@@ -14,74 +24,86 @@ module MerchantSidekick
         empty!
       end
 
-      # Add a cart_line_item or a product. In case, a product is added
-      # it will be copied and the copy added as a cart_line_item.
-      # if thing is a Product, it needs to be converted to a
-      # MerchantSidekick::ShoppingCart::LineItem first.
-      def add(thing, quantity=1, options={})
-        if thing.is_a?(MerchantSidekick::ShoppingCart::LineItem)
-          self.add_cart_line_item(thing, options)
+      # Adds a single or array of sellable products to the cart and 
+      # returns the cart line items.
+      #
+      # E.g.
+      # 
+      #   @cart.add @sellable
+      #   @cart.add @sellable, 4
+      #   @cart.add [@sellable1, @sellable2]
+      #
+      def add(stuff, quantity = 1, options = {})
+        if stuff.is_a?(Array)
+          stuff.inject([]) {|result, element| result << add(element, quantity, options)}
+        elsif stuff.is_a?(MerchantSidekick::ShoppingCart::LineItem)
+          self.add_cart_line_item(stuff, options)
         else
-          # Product
-          self.add_product(thing, quantity, options)
+          # assuming it is a "product" (e.g. sellable) instance
+          self.add_product(stuff, quantity, options)
         end
       end
 
       # Removes an item from the cart
-      def remove(thing, options={})
-        if thing.is_a?(MerchantSidekick::ShoppingCart::LineItem)
-          self.remove_cart_line_item(thing, options)
+      def remove(stuff, options={})
+        if stuff.is_a?(MerchantSidekick::ShoppingCart::LineItem)
+          self.remove_cart_line_item(stuff, options)
         else
-          self.remove_product(thing, options)
+          self.remove_product(stuff, options)
         end
       end
       alias_method :delete, :remove
 
-      # updates an existing line_item with quantity by product or line_item
+      # Updates an existing line_item with quantity by product or line_item
       # instance. If quanity is <= 0, the item will be removed.
-      def update(thing, quantity, options={})
-        if thing.is_a?(MerchantSidekick::ShoppingCart::LineItem)
-          self.update_cart_line_item(thing, quantity, options)
+      def update(stuff, quantity, options={})
+        if stuff.is_a?(MerchantSidekick::ShoppingCart::LineItem)
+          self.update_cart_line_item(stuff, quantity, options)
         else
-          self.update_product(thing, quantity, options)
+          self.update_product(stuff, quantity, options)
         end
       end
 
       # Finds an instance of line item, by product or line_item
-      # e.g.
-      # find(:first, @product)
-      def find(what, thing, options={})
-        if thing.is_a?(MerchantSidekick::ShoppingCart::LineItem)
-          self.find_line_items(what, thing, options)
+      #
+      # E.g.
+      #
+      #   @cart.find(:first, @product) # -> @li
+      #   @cart.find(:all, @product)   # -> [@li1, @li2]
+      #
+      def find(what, stuff, options={})
+        if stuff.is_a?(MerchantSidekick::ShoppingCart::LineItem)
+          self.find_line_items(what, stuff, options)
         else
-          self.find_line_items_by_product(what, thing, options)
+          self.find_line_items_by_product(what, stuff, options)
         end
       end
 
-      # Empty cart
+      # Remove all line items from cart
       def empty!
         @line_items = []
       end
 
+      # Check to see if cart is empty?
       def empty?
         @line_items.empty?
       end
 
-      def total_price
+      # Evaluates the total amount of a sum as all item prices * quantity
+      def total_amount
         sum = ::Money.new(1, self.currency)
-        @line_items.each {|i| sum += i.total_price }
+        @line_items.each {|li| sum += li.total_amount}
         sum -= ::Money.new(1, self.currency)
         sum
       end
-      alias_method :total, :total_price
-      alias_method :sub_total, :total_price
+      alias_method :total, :total_amount
 
-      # counts number of line items
+      # counts number of line items.
       def line_items_count
         self.line_items.size
       end
 
-      # counts number of entities line_items * quantities
+      # counts number of entities line_items * quantities.
       def items_count
         counter = 0
         self.line_items.each do |item|
@@ -90,9 +112,9 @@ module MerchantSidekick
         counter
       end
 
-      # Create a product line from a product (product) and copy
+      # Create a product line from a product (sellable) and copies
       # all attributes that could be modified later
-      def cart_line_item(product, quantity=1, line_options={})
+      def cart_line_item(product, quantity = 1, line_options = {})
         raise "No price column available for '#{product.class.name}'" unless product.respond_to?(:price)
         # we need to set currency explicitly here for correct money conversion of the cart_line_item
         MerchantSidekick::ShoppingCart::LineItem.new do |line_item|
@@ -106,11 +128,11 @@ module MerchantSidekick
 
       # Return a list of cart line items from an array of products, e.g. Products
       def cart_line_items(products)
-        products.collect { |p| self.cart_line_item(p) }
+        products.map {|p| self.cart_line_item(p)}
       end
 
       # cart options setter
-      def options=(some_options={})
+      def options=(some_options = {})
         @options = some_options.to_hash
       end
 

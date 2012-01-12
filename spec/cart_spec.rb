@@ -12,12 +12,12 @@ describe MerchantSidekick::ShoppingCart::Cart do
       # defaults
       cart = MerchantSidekick::ShoppingCart::Cart.new
       cart.currency.should == 'USD'
-      cart.total_price == Money.new(0, 'USD')
+      cart.total_amount == Money.new(0, 'USD')
 
       # user and currency
       cart = MerchantSidekick::ShoppingCart::Cart.new('EUR')
       cart.currency.should == 'EUR'
-      cart.total_price == Money.new(0, 'EUR')
+      cart.total_amount == Money.new(0, 'EUR')
     end
   end
 

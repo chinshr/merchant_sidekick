@@ -104,7 +104,7 @@ describe "A seller selling multiple products" do
     transaction do
       lambda { @order.save! }.should change(MerchantSidekick::LineItem, :count).by(2)
       @order.should have(2).line_items
-      @order.line_items.collect(&:sellable).should == @products
+      @order.line_items.map(&:sellable).should == @products
     end
   end
 end

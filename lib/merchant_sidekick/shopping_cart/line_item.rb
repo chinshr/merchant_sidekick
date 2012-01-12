@@ -127,11 +127,11 @@ module MerchantSidekick
 
       # total price = unit_price * quantity
       # unit_price is defined as money!
-      def total_price
+      def total_amount
         self.unit_price * (self.quantity || 1)
       end
-      alias_method :price, :total_price
-      alias_method :amount, :total_price
+      alias_method :price, :total_amount
+      # alias_method :total_price, :total_amount
 
       # Price per piece
       # Example:

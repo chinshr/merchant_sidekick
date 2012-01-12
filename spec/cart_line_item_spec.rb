@@ -18,7 +18,7 @@ describe MerchantSidekick::ShoppingCart::LineItem do
       item.quantity.should == 5
       item.unit.should == :piece
       item.pieces.should == 1
-      item.total_price.to_s.should == '149.75'
+      item.total_amount.to_s.should == '149.75'
       item.should be_taxable
     end
   end
@@ -51,7 +51,8 @@ describe MerchantSidekick::ShoppingCart::LineItem do
       item.item_number.should == "customized item number"
       item.description.should == "customized description"
       item.unit_price.to_s.should == "99.99"
-      item.total_price.to_s.should == "499.95"
+      item.total_amount.to_s.should == "499.95"
+      item.price.to_s.should == "499.95"
     end
   end
 
