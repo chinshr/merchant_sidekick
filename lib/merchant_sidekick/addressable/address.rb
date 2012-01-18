@@ -304,8 +304,6 @@ module MerchantSidekick
       def middle_name=(a_middle_name)
         self[middle_name_column] = a_middle_name if middle_name?
       end
-      alias_method :middlename=, :middle_name=
-
 
       # setter
       def gender=(a_gender)

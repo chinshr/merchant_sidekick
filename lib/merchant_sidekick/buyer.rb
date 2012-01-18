@@ -16,7 +16,13 @@ module MerchantSidekick
       #     ...
       #   end
       #
+      #   # Simple purchase
       #   # => @client.purchase @products
+      #
+      #   # Purchase referencing a seller
+      #   # => @client.purchase @products, :from => @merchant
+      #
+      #   # Same as above
       #   # => @client.purchase_from @merchant, @products
       #
       def acts_as_buyer
@@ -33,7 +39,7 @@ module MerchantSidekick
       # like purchase but forces the seller parameter, instead of
       # taking it as a :seller option
       def purchase_from(seller, *arguments)
-        purchase(arguments, :seller => seller)
+        purchase(arguments, :from => seller)
       end
 
       # purchase creates a purchase order based on
@@ -65,7 +71,7 @@ module MerchantSidekick
 
         self.purchase_orders.build do |po|
           po.buyer = self
-          po.seller = options[:seller]
+          po.seller = options[:from]
           po.build_addresses
           sellables.each do |sellable|
             if sellable && sellable.respond_to?(:before_add_to_order)
@@ -82,7 +88,7 @@ module MerchantSidekick
 
       protected
 
-      # override in model, e.g. :seller => @person
+      # override in model, e.g. :from => @merchant
       def default_purchase_options
         {}
       end
