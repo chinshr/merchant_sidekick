@@ -31,19 +31,42 @@ end
 describe "A buyer purchasing a sellable" do
 
   def setup
-    @user = users(:sam)
-    @billing = @user.create_billing_address(addresses(:sam_billing).content_attributes)
-    @shipping = @user.create_shipping_address(addresses(:sam_shipping).content_attributes)
-    @product = products(:widget)
+    @customer = users(:sam)
+    @merchant = users(:sally)
+    @billing  = @customer.create_billing_address(addresses(:sam_billing).content_attributes)
+    @shipping = @customer.create_shipping_address(addresses(:sam_shipping).content_attributes)
+    @product  = products(:widget)
   end
 
   it "should create a new order" do
     transaction do
       lambda {
-        order_count = MerchantSidekick::Order.count
-        order = @user.purchase @product
+        order = @customer.purchase @product
         order.should be_an_instance_of(MerchantSidekick::PurchaseOrder)
+        order.seller.should == nil
         order.buyer.should be_an_instance_of(BuyingUser)
+        order.should be_valid
+        order.save!
+      }.should change(MerchantSidekick::Order, :count)
+    end
+  end
+  
+  it "should create a new order referencing a merchant with :from option" do
+    transaction do
+      lambda {
+        order = @customer.purchase @product, :from => @merchant
+        order.seller.should == @merchant
+        order.should be_valid
+        order.save!
+      }.should change(MerchantSidekick::Order, :count)
+    end
+  end
+
+  it "should create a new order referencing a merchant with purchase_from method" do
+    transaction do
+      lambda {
+        order = @customer.purchase_from @merchant, @product
+        order.seller.should == @merchant
         order.should be_valid
         order.save!
       }.should change(MerchantSidekick::Order, :count)
@@ -52,16 +75,16 @@ describe "A buyer purchasing a sellable" do
 
   it "should add to buyers's orders" do
     transaction do
-      order = @user.purchase(@product)
+      order = @customer.purchase(@product)
       order.save!
-      @user.orders.last.should == order
-      order.buyer.should == @user
+      @customer.orders.last.should == order
+      order.buyer.should == @customer
     end
   end
 
   it "should create line items" do
     transaction do
-      order = @user.purchase(@product)
+      order = @customer.purchase(@product)
       order.line_items.size.should == 1
       order.line_items.first.sellable.should == @product
     end
@@ -69,7 +92,7 @@ describe "A buyer purchasing a sellable" do
 
   it "should set line item amount to sellable price" do
     transaction do
-      order = @user.purchase @product
+      order = @customer.purchase @product
       order.line_items.first.amount.should == @product.price
     end
   end
@@ -77,14 +100,14 @@ describe "A buyer purchasing a sellable" do
   it "should set line item amount to 0 if sellable does not have a price" do
     transaction do
       @product.price = 0
-      order = @user.purchase @product
+      order = @customer.purchase @product
       order.line_items.first.amount.should == 0.to_money
     end
   end
 
   it "should initialize but not save the order" do
     transaction do
-      @order = @user.purchase @product
+      @order = @customer.purchase @product
       @order.should be_new_record
     end
   end
