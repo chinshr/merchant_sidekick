@@ -45,6 +45,20 @@ describe "A seller sells a product" do
       lambda do
         order = @sally.sell_to @sam, @product
         order.should be_an_instance_of(MerchantSidekick::SalesOrder)
+        order.buyer.should == @sam
+        order.should be_valid
+        order.save!
+      end.should change(MerchantSidekick::Order, :count)
+    end
+  end
+
+  it "should build sales order :to option" do
+    transaction do
+      lambda do
+        order = @sally.sell @product, :to => @sam
+        order.should be_an_instance_of(MerchantSidekick::SalesOrder)
+        order.seller.should == @sally
+        order.buyer.should == @sam
         order.should be_valid
         order.save!
       end.should change(MerchantSidekick::Order, :count)

@@ -16,7 +16,11 @@ module MerchantSidekick
       #     ...
       #   end
       #
-      #   # => @merchant.sell_to @buyer, @products
+      #   # Selling a product to @customer
+      #   @merchant.sell_to @customer, @products
+      #   
+      #   # Alternative syntax
+      #   @merchant.sell @products, :to => @customer
       #
       def acts_as_seller(options={})
         include MerchantSidekick::Seller::InstanceMethods
@@ -30,10 +34,8 @@ module MerchantSidekick
     module InstanceMethods
 
       def sell_to(buyer, *arguments)
-        sell(arguments, :buyer => buyer)
+        sell(arguments, :to => buyer)
       end
-
-      protected
 
       # Sell sellables (line_items) and add them to a sales order
       # The seller will be this person.
@@ -62,7 +64,7 @@ module MerchantSidekick
         raise ArgumentError.new("Sellable models must have a :price") unless sellables.all? {|sellable| sellable.respond_to? :price}
 
         self.sales_orders.build do |so|
-          so.buyer = options[:buyer]
+          so.buyer = options[:to]
           so.build_addresses
 
           sellables.each do |sellable|
@@ -78,7 +80,9 @@ module MerchantSidekick
         end
       end
 
-      # override in model, e.g. :buyer => @person
+      protected
+
+      # override in model, e.g. :to => @customer
       def default_sell_options
         {}
       end
