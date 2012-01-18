@@ -14,6 +14,7 @@
 * Added bogus gateway configuration wrapper
 * Cart instances can now be added directly to purchase
 * Cart instances can now be sold
+* Change @customer.purchase to accept :from => @merchant
 
 ## 0.4.0 (2011-12-27)
 
