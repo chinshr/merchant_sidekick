@@ -99,6 +99,13 @@ describe "A seller sells a product" do
     end
   end
 
+  it "should ignore blank sellables" do
+    transaction do
+      order = @sally.sell_to @sam, @product, nil
+      order.line_items.size.should == 1
+    end
+  end
+
 end
 
 describe "A seller selling multiple products" do

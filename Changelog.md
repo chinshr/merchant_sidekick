@@ -16,6 +16,7 @@
 * Cart instances can now be sold
 * Change @customer.purchase syntax to accept :from => @merchant
 * Change @merchant.sell syntax to accept :to => @customer
+* Ignoring blank sellables from purchase and sell
 
 ## 0.4.0 (2011-12-27)
 
