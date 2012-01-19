@@ -112,6 +112,13 @@ describe "A buyer purchasing a sellable" do
     end
   end
 
+  it "should ignore blank sellables on purchase" do
+    transaction do
+      @order = @customer.purchase @product, nil
+      @order.line_items.size.should == 1
+    end
+  end
+
 end
 
 describe "A buyer purchasing multiple sellables" do

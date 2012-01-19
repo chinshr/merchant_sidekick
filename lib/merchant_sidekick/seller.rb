@@ -59,6 +59,7 @@ module MerchantSidekick
           end
         end
         sellables.flatten!
+        sellables.reject! {|s| s.blank?}
 
         raise ArgumentError.new("No sellable (e.g. product) model provided") if sellables.empty?
         raise ArgumentError.new("Sellable models must have a :price") unless sellables.all? {|sellable| sellable.respond_to? :price}

@@ -162,17 +162,17 @@ module MerchantSidekick
     #
     def payment_options(options={})
       { # general
-        :buyer => self.buyer,
-        :seller => self.seller,
-        :payable => self,
+        :buyer            => self.buyer,
+        :seller           => self.seller,
+        :payable          => self,
         # active merchant relevant
-        :customer => self.buyer ? "#{self.buyer.name} (#{self.buyer.id})" : nil,
-        :email => self.buyer && self.buyer.respond_to?(:email) ? self.buyer.email : nil,
-        :invoice => self.number,
-        :merchant => self.seller ? "#{self.seller.name} (#{self.seller.id})" : nil,
-        :currency => self.currency,
-        :billing_address => self.billing_address ? self.billing_address.to_merchant_attributes : nil,
-        :shipping_address =>  self.shipping_address ? self.shipping_address.to_merchant_attributes : nil
+        :customer         => self.buyer ? "#{self.buyer.class.name} (#{self.buyer.id})" : nil,
+        :merchant         => self.seller ? "#{self.seller.class.name} (#{self.seller.id})" : nil,
+        :email            => self.buyer && self.buyer.respond_to?(:email) ? self.buyer.email : nil,
+        :invoice          => self.number,
+        :currency         => self.currency,
+        :billing_address  => self.billing_address ? self.billing_address.to_merchant_attributes : nil,
+        :shipping_address => self.shipping_address ? self.shipping_address.to_merchant_attributes : nil
       }.merge(options)
     end
 
