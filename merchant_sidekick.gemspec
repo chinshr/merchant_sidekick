@@ -15,8 +15,7 @@ Gem::Specification.new do |s|
   s.test_files        = `git ls-files -- {spec}/*`.split("\n")
   s.require_paths     = ["lib"]
 
-  s.add_dependency "activerecord", "~> 3.1.0"
-  s.add_dependency "activesupport", "~> 3.1.0" # TODO remove once we replace inheritable_attribute readers with configurations
+  s.add_dependency "activerecord", ">= 3.1.0"
   s.add_dependency "money"
   s.add_dependency "acts_as_list"
   s.add_dependency "aasm"
