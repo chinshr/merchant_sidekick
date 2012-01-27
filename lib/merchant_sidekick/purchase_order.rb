@@ -42,20 +42,18 @@ module MerchantSidekick
       defaults = { :order_id => number }
       options = defaults.merge(options).symbolize_keys
 
-      # before_payment
-      buyer.send( :before_payment, self ) if buyer && buyer.respond_to?( :before_payment )
-
+      # fire buyer's before_payment callback
+      buyer.send(:before_payment, self) if buyer && buyer.respond_to?(:before_payment)
       self.build_addresses
       self.build_invoice unless self.last_unsaved_invoice
-
       payment = self.last_unsaved_invoice.purchase(payment_object, options)
       if payment.success?
         process_payment!
         approve_payment!
       end
       save!
-      # after_payment
-      buyer.send( :after_payment, self ) if buyer && buyer.respond_to?( :after_payment )
+      # fire buyer's after_payment callback
+      buyer.send(:after_payment, self ) if buyer && buyer.respond_to?(:after_payment)
       payment
     end
 
@@ -69,10 +67,8 @@ module MerchantSidekick
 
       if invoice = self.purchase_invoices.find(:all, :created_at => "invoices.id ASC").last
         # before_payment
-        buyer.send( :before_void_payment, self ) if buyer && buyer.respond_to?( :before_void_payment )
-
+        buyer.send(:before_void_payment, self ) if buyer && buyer.respond_to?(:before_void_payment)
         voided_result = invoice.void(options)
-
         if voided_result.success?
           cancel!
         end
@@ -90,16 +86,15 @@ module MerchantSidekick
       options = defaults.merge(options).symbolize_keys
 
       if (invoice = self.purchase_invoices.find(:all, :created_at => "invoices.id ASC").last) && invoice.paid?
-        # before_payment
+        # fire buyer's before_refund_payment callback
         buyer.send(:before_refund_payment, self) if buyer && buyer.respond_to?(:before_refund_payment)
-
         refunded_result = invoice.credit(options)
         if refunded_result.success?
           refund!
         end
         save!
-        # after_void_payment
-        buyer.send( :after_refund_payment, self ) if buyer && buyer.respond_to?( :after_refund_payment )
+        # fire buyer's after_refund_payment callback
+        buyer.send(:after_refund_payment, self) if buyer && buyer.respond_to?(:after_refund_payment)
         refunded_result
       end
     end
@@ -117,9 +112,7 @@ module MerchantSidekick
 
       authorization = Payment.class_for(payment_object).recurring(
         gross_total, payment_object, payment_options(options))
-
       self.push_payment(authorization)
-
       if authorization.success?
         save(false)
         process_payment!
@@ -223,7 +216,7 @@ module MerchantSidekick
 
     # used in build_invoice to determine which type of invoice
     def to_invoice_class_name
-      'PurchaseInvoice'
+      "MerchantSidekick::PurchaseInvoice"
     end
 
     # returns last unsaved invoice

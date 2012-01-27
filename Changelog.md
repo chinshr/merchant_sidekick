@@ -1,5 +1,11 @@
 # MerchantSidekick Changelog
 
+## 0.4.2 (NOT RELEASED YET)
+
+* Renamed state transition exit callbacks for order and invoice
+* Loosened active_record gem dependency to work with Rails 3.2.x
+* Version bump
+
 ## 0.4.1 (NOT RELEASED YET)
 
 * Fix overridden `build_#{relation}` method signature
