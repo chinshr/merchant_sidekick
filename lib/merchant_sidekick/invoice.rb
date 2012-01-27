@@ -19,14 +19,13 @@ module MerchantSidekick
     has_address :origin, :billing, :shipping
 
     #--- state machine
-    aasm_initial_state :pending
     aasm :column => "status" do
-      state :pending, :enter => :enter_pending, :after => :after_pending
-      state :authorized, :enter => :enter_authorized, :after => :after_authorized
-      state :paid, :enter => :enter_paid, :after => :after_paid
-      state :voided, :enter => :enter_voided, :after => :after_voided
-      state :refunded, :enter => :enter_refunded, :after => :after_refunded
-      state :payment_declined, :enter => :enter_payment_declined, :after => :after_payment_declined
+      state :pending,          :enter => :enter_pending,          :exit => :exit_pending, :initial => true
+      state :authorized,       :enter => :enter_authorized,       :exit => :exit_authorized
+      state :paid,             :enter => :enter_paid,             :exit => :exit_paid
+      state :voided,           :enter => :enter_voided,           :exit => :exit_voided
+      state :refunded,         :enter => :enter_refunded,         :exit => :exit_refunded
+      state :payment_declined, :enter => :enter_payment_declined, :exit => :exit_payment_declined
 
       event :payment_paid do
         transitions :from => :pending, :to => :paid, :guard => :guard_payment_paid_from_pending
@@ -64,12 +63,12 @@ module MerchantSidekick
     def enter_refunded; end
     def enter_payment_declined; end
 
-    def after_pending; end
-    def after_authorized; end
-    def after_paid; end
-    def after_voided; end
-    def after_refunded; end
-    def after_payment_declined; end
+    def exit_pending; end
+    def exit_authorized; end
+    def exit_paid; end
+    def exit_voided; end
+    def exit_refunded; end
+    def exit_payment_declined; end
 
     # event guard callbacks
     def guard_transaction_declined_from_authorized; true; end

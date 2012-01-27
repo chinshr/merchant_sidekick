@@ -39,12 +39,16 @@ describe "authorize with a valid credit card" do
 
   it "should return a payment" do
     transaction do
+      @user.should_receive(:before_authorize_payment)
+      @user.should_receive(:after_authorize_payment)
+      @order.should_receive(:enter_pending)
       @order.authorize(@credit_card).should be_instance_of(MerchantSidekick::ActiveMerchant::CreditCardPayment)
     end
   end
 
   it "should return success" do
     transaction do
+      @order.should_receive(:enter_pending)
       @order.authorize(@credit_card).should be_success
     end
   end
@@ -119,6 +123,34 @@ describe "Cancelling an order" do
   end
 end
 
+describe "Paying an order with valid credit card" do
+  def setup
+    @buyer        = users(:sam)
+    @sam_billing  = @buyer.create_billing_address(addresses(:sam_billing).content_attributes)
+    @sam_shipping = @buyer.create_shipping_address(addresses(:sam_shipping).content_attributes)
+    @order        = orders(:unpaid)
+    @credit_card  = ActiveMerchant::Billing::CreditCard.new valid_credit_card_attributes(:number => "1")
+    @order.reload
+    mock_gateway(false, @order, @credit_card)
+  end
+
+  it "should return an unsuccessful payment" do
+    transaction do
+      @order.buyer.should_receive(:before_payment)
+      @order.buyer.should_receive(:after_payment)
+      @order.should_receive(:enter_pending)
+#      @order.should_receive(:exit_pending)
+      @order.should_receive(:enter_approved)
+#      @order.should_receive(:exit_approved)
+      payment = @order.pay(@credit_card)
+      payment.action.should == "purchase"
+      payment.success.should == true
+      payment.should_not be_new_record
+      @order.current_state.should == :approved
+    end
+  end
+end
+
 describe "Paying an order with an invalid credit card" do
   def setup
     @buyer        = users(:sam)
@@ -132,6 +164,8 @@ describe "Paying an order with an invalid credit card" do
 
   it "should return an unsuccessful payment" do
     transaction do
+      @order.buyer.should_receive(:before_payment)
+      @order.buyer.should_receive(:after_payment)
       payment = @order.pay(@credit_card)
       payment.action.should == "purchase"
       payment.success.should == false

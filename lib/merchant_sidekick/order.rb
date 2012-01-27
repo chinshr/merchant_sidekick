@@ -20,18 +20,17 @@ module MerchantSidekick
     has_address :origin, :billing, :shipping
 
     #--- state machine
-    aasm_initial_state :created
-    aasm :column               => "status" do
-      state :created
-      state :pending, :enter   => :enter_pending, :after => :after_pending
-      state :approved, :enter  => :enter_approved, :after => :after_approved
-      state :shipping, :enter  => :enter_shipping, :after => :after_shipping
-      state :shipped, :enter   => :enter_shipped, :after => :after_shipped
-      state :received, :enter  => :enter_received, :after => :after_received
-      state :returning, :enter => :enter_returning, :after => :after_returning
-      state :returned, :enter  => :enter_returned, :after => :after_returned
-      state :refunded, :enter  => :enter_refunded, :after => :after_refunded
-      state :canceled, :enter  => :enter_canceled, :after => :after_canceled
+    aasm :column => "status" do
+      state :created,   :enter => :enter_created,   :exit => :exit_created, :initial => true
+      state :pending,   :enter => :enter_pending,   :exit => :exit_pending
+      state :approved,  :enter => :enter_approved,  :exit => :exit_approved
+      state :shipping,  :enter => :enter_shipping,  :exit => :exit_shipping
+      state :shipped,   :enter => :enter_shipped,   :exit => :exit_shipped
+      state :received,  :enter => :enter_received,  :exit => :exit_received
+      state :returning, :enter => :enter_returning, :exit => :exit_returning
+      state :returned,  :enter => :enter_returned,  :exit => :exit_returned
+      state :refunded,  :enter => :enter_refunded,  :exit => :exit_refunded
+      state :canceled,  :enter => :enter_canceled,  :exit => :exit_canceled
 
       event :process_payment do
         transitions :from      => :created, :to => :pending, :guard => :guard_process_payment_from_created
@@ -73,6 +72,7 @@ module MerchantSidekick
     end
 
     # state transition callbacks, to be overwritten
+    def enter_created; end
     def enter_pending; end
     def enter_approved; end
     def enter_shipping; end
@@ -83,15 +83,16 @@ module MerchantSidekick
     def enter_refunded; end
     def enter_canceled; end
 
-    def after_pending; end
-    def after_approved; end
-    def after_shipping; end
-    def after_shipped; end
-    def after_received; end
-    def after_returning; end
-    def after_returned; end
-    def after_refunded; end
-    def after_canceled; end
+    def exit_created; end
+    def exit_pending; end
+    def exit_approved; end
+    def exit_shipping; end
+    def exit_shipped; end
+    def exit_received; end
+    def exit_returning; end
+    def exit_returned; end
+    def exit_refunded; end
+    def exit_canceled; end
 
     # event guard callbacks, to be overwritten
     def guard_process_payment_from_created; true; end
