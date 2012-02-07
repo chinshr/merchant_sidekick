@@ -82,7 +82,7 @@ module MerchantSidekick
     def guard_payment_paid_from_pending; true; end
 
     #--- scopes
-    scope :paid, where(:status => "paid")
+    scope :paid, :conditions => {:status => "paid"}
 
     #--- callbacks
     before_save :number
