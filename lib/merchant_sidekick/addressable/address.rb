@@ -81,12 +81,6 @@ module MerchantSidekick
           addressable_str.constantize.find(addressable_id)
         end
 
-        # attempt to make sanitize_sql public
-        def sanitize_sql_with_key_translation(condition)
-          sanitize_sql_without_key_translation(condition)
-        end
-        alias_method_chain :sanitize_sql, :key_translation
-
         # TODO not used
         def translate_column_key(in_column)
           out_column = class_variable_get("@@#{in_column}")
