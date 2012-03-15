@@ -81,9 +81,6 @@ module MerchantSidekick
     def guard_payment_authorized_from_pending; true; end
     def guard_payment_paid_from_pending; true; end
 
-    #--- scopes
-    scope :paid, :conditions => {:status => "paid"}
-
     #--- callbacks
     before_save :number
 

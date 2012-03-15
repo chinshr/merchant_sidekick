@@ -24,7 +24,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec", "~> 2.7.0"
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "rake"
-
+  s.add_development_dependency "redcarpet"
+  s.add_development_dependency "yard"
   s.description = <<-EOM
 EOM
 
