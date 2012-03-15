@@ -4,6 +4,8 @@ docs
 pkg
 .DS_Store
 coverage
+doc
+docs
 .yardoc
 .rvmrc
 *.gem
