@@ -8,3 +8,9 @@ RSpec::Core::RakeTask.new do |t|
 end
 
 task :default => :spec
+
+task :yard do
+  puts %x{bundle exec yard}
+end
+
+task :doc => :yard
