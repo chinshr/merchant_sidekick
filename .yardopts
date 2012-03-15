@@ -1,0 +1,3 @@
+--files=Changelog.md
+--protected
+--exclude lib/merchant_sidekick/migrations
