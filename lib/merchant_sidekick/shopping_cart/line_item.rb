@@ -35,8 +35,9 @@ module MerchantSidekick
           else
             false
           end
+
           self[:unit] = a_product.respond_to?(:unit) ? a_product.unit.to_s : 'piece'
-          self[:pieces] = a_product.respond_to?(:pieces) ? a_product.pieces : 1,
+          self[:pieces] = a_product.respond_to?(:pieces) ? a_product.pieces : 1
 
           # name from product copy_name method, name or title column
           self[:name] = if a_product.respond_to?(:copy_name)

@@ -161,12 +161,10 @@ class User < ActiveRecord::Base
   has_address :billing, :shipping
 end
 
-# TODO rename to just "Buyer"
 class Buyer < User
   acts_as_buyer
 end
 
-# TODO rename to just "Seller"
 class Seller < User
   acts_as_seller
 end
