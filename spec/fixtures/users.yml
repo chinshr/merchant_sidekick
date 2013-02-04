@@ -2,10 +2,10 @@ sam:
   id: 1
   name: Sam Body
   email: sam@example.com
-  type: BuyingUser
-  
+  type: Buyer
+
 sally:
   id: 2
   name: Sally Sellers
   email: sally@example.com
-  type: SellingUser
+  type: Seller

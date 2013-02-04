@@ -3,27 +3,27 @@ require File.expand_path("../spec_helper", __FILE__)
 describe "A seller's model" do
 
   it "should be able to sell" do
-    SellingUser.new.should respond_to(:sell)
+    Seller.new.should respond_to(:sell)
   end
 
   it "should be able to sell" do
-    SellingUser.new.should respond_to(:sell_to)
+    Seller.new.should respond_to(:sell_to)
   end
 
   it "should have many orders" do
-    lambda { SellingUser.new.orders(true).first }.should_not raise_error
+    lambda { Seller.new.orders(true).first }.should_not raise_error
   end
 
   it "should have many invoices" do
-    lambda { SellingUser.new.invoices(true).first }.should_not raise_error
+    lambda { Seller.new.invoices(true).first }.should_not raise_error
   end
 
   it "should have many sales orders" do
-    lambda { SellingUser.new.sales_orders(true).first }.should_not raise_error
+    lambda { Seller.new.sales_orders(true).first }.should_not raise_error
   end
 
   it "should have many sales invoices" do
-    lambda { SellingUser.new.sales_invoices(true).first }.should_not raise_error
+    lambda { Seller.new.sales_invoices(true).first }.should_not raise_error
   end
 
 end
@@ -152,19 +152,19 @@ describe "A seller selling a cart" do
       order.total.to_s.should == "33.94"
     end
   end
-  
+
   it "should sell multipe carts" do
     transaction do
       cart1 = MerchantSidekick::ShoppingCart::Cart.new
       cart2 = MerchantSidekick::ShoppingCart::Cart.new
-      
+
       cart1.add(@products.first)
       cart2.add(@products.last)
       order = @sally.sell_to @sam, cart1, cart2
       order.total.to_s.should == "33.94"
     end
   end
-  
+
 end
 
 
