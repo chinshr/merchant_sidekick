@@ -1,6 +1,6 @@
 # MerchantSidekick
 
-MerchantSidekick is a light-weight E-commerce framework for Ruby on Rails applications.
+MerchantSidekick is a full featured light-weight E-commerce framework for Ruby on Rails applications.
 
 ## Features
 
@@ -65,9 +65,15 @@ of ActiveMerchant.
     end
     
 
+## Future Features
+
+Provide mechanism for persistent and non-persistent shopping carts. 
+Carts are currently meant to be stored in sessions, which have size
+constraints, unless they are persisted in the DB.
+
 ## License
 
-Copyright (c) 2008-2012 Juergen Fesslmeier, released under the MIT license.
+Copyright (c) 2008-2013 Juergen Fesslmeier, released under the MIT license.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
