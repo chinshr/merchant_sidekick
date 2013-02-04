@@ -5,6 +5,8 @@
 * Renamed state transition exit callbacks for order and invoice
 * Loosened active_record gem dependency to work with Rails 3.2.x
 * Version bump
+* @klebervirgilio merging pull request to fix specs and refactor
+  BuyingUser and SellingUser test classes to Buyer and Seller
 
 ## 0.4.1 (NOT RELEASED YET)
 
