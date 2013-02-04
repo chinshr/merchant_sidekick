@@ -3,27 +3,27 @@ require File.expand_path("../spec_helper", __FILE__)
 describe "A buyer's model" do
 
   it "should be able to purchase" do
-    BuyingUser.new.should respond_to(:purchase)
+    Buyer.new.should respond_to(:purchase)
   end
 
   it "should be able to purchase" do
-    BuyingUser.new.should respond_to(:purchase_from)
+    Buyer.new.should respond_to(:purchase_from)
   end
 
   it "should have many orders" do
-    lambda { BuyingUser.new.orders(true).first }.should_not raise_error
+    lambda { Buyer.new.orders(true).first }.should_not raise_error
   end
 
   it "should have many invoices" do
-    lambda { SellingUser.new.invoices(true).first }.should_not raise_error
+    lambda { Seller.new.invoices(true).first }.should_not raise_error
   end
 
   it "should have many purchase orders" do
-    lambda { BuyingUser.new.purchase_orders(true).first }.should_not raise_error
+    lambda { Buyer.new.purchase_orders(true).first }.should_not raise_error
   end
 
   it "should have many purchase invoices" do
-    lambda { BuyingUser.new.purchase_invoices(true).first }.should_not raise_error
+    lambda { Buyer.new.purchase_invoices(true).first }.should_not raise_error
   end
 
 end
@@ -44,13 +44,13 @@ describe "A buyer purchasing a sellable" do
         order = @customer.purchase @product
         order.should be_an_instance_of(MerchantSidekick::PurchaseOrder)
         order.seller.should == nil
-        order.buyer.should be_an_instance_of(BuyingUser)
+        order.buyer.should be_an_instance_of(Buyer)
         order.should be_valid
         order.save!
       }.should change(MerchantSidekick::Order, :count)
     end
   end
-  
+
   it "should create a new order referencing a merchant with :from option" do
     transaction do
       lambda {
@@ -159,7 +159,7 @@ describe "A buyer purchasing from a cart" do
 
     @products = [products(:widget), products(:knob)]
     @order = @sam.purchase_from @sally, @products
-    
+
     @cart = MerchantSidekick::ShoppingCart::Cart.new
   end
 
@@ -176,7 +176,7 @@ describe "A buyer purchasing from a cart" do
     transaction do
       cart1 = MerchantSidekick::ShoppingCart::Cart.new
       cart2 = MerchantSidekick::ShoppingCart::Cart.new
-      
+
       cart1.add @products.first
       cart2.add @products.last
       order = @sam.purchase cart1, cart2

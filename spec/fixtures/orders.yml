@@ -1,7 +1,7 @@
 sams_widget:
   id: 1
   buyer_id: 1
-  buyer_type: BuyingUser
+  buyer_type: Buyer
   status: created
   net_cents: 2995
   tax_cents: 0
@@ -11,14 +11,14 @@ sams_widget:
 paid:
   id: 2
   buyer_id: 1
-  buyer_type: BuyingUser
+  buyer_type: Buyer
   type: MerchantSidekick::PurchaseOrder
 unpaid:
   id: 3
   buyer_id: 1
-  buyer_type: BuyingUser
+  buyer_type: Buyer
   net_cents: 12321
   tax_cents: 0
   gross_cents: 12321
   currency: USD
-  type: MerchantSidekick::PurchaseOrder  
+  type: MerchantSidekick::PurchaseOrder
