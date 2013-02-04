@@ -185,7 +185,7 @@ def valid_credit_card_attributes(attributes = {})
     :month              => "8",
     :year               => "#{ Time.now.year + 1 }",
     :verification_value => '123',
-    :type               => 'visa'
+    :brand              => 'visa'
   }.merge(attributes)
 end
 
@@ -196,7 +196,7 @@ def invalid_credit_card_attributes(attributes = {})
     :month      => "8",
     :year       => Time.now.year + 1,
     :number     => "2",
-    :type       => "bogus"
+    :brand      => "bogus"
   }.merge(attributes)
 end
 
