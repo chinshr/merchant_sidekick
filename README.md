@@ -1,6 +1,12 @@
 # MerchantSidekick
 
-MerchantSidekick is a full featured light-weight E-commerce framework for Ruby on Rails applications.
+MerchantSidekick is a full featured light-weight E-commerce framework for Ruby applications.
+It's currently used in the following applications:
+
+    * [coalheadwear.com](http://coalheadwear.com) with [authorize.net](http://authorize.net) gateway
+    * [givegoods.org](http://givegoods.org) with [authorize.net](http://authorize.net) gateway
+    * [kann-ich-klagen.de](http://kann-ich-klagen.de) with [paygate](http://computop.com) gateway
+    * [luleka.com](http://luleka.com) with [Paypal](http://www.paypal.com/webapps/mpp/paypal-payments-pro) gateway
 
 ## Features
 
