@@ -162,12 +162,12 @@ class User < ActiveRecord::Base
 end
 
 # TODO rename to just "Buyer"
-class BuyingUser < User
+class Buyer < User
   acts_as_buyer
 end
 
 # TODO rename to just "Seller"
-class SellingUser < User
+class Seller < User
   acts_as_seller
 end
 
