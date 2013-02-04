@@ -1,6 +1,6 @@
 # MerchantSidekick
 
-MerchantSidekick is a full featured light-weight E-commerce framework for Ruby applications.
+MerchantSidekick (MSK) is a fully featured light-weight E-commerce framework for Ruby applications.
 It's currently used in the following applications:
 
     * [coalheadwear.com](http://coalheadwear.com) with [authorize.net](http://authorize.net) gateway
@@ -13,7 +13,7 @@ It's currently used in the following applications:
 MerchantSidekick includes in- and outbound order management and invoicing, 
 a shopping cart, taxation and payment processing. It integrates with 
 [ActiveMerchant](http://activemerchant.org) for payment processing by default.
-The plugin can be extended to use other payment processors outside the scope
+The plugin can be extended to use any customer payment processors outside the scope
 of ActiveMerchant.
 
 ## Quickstart
